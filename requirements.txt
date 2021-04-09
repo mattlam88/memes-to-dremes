@@ -1,2 +1,4 @@
 PySide2==5.15.2
 shiboken2==5.15.2
+tweepy==3.10.0
+pandas==1.2.3
