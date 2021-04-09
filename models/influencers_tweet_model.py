@@ -6,7 +6,7 @@ class InfluencersTweetDAO:
         self.conn = sqlite3.connect("/Users/mattlam/Documents/OSU-Hackathon-Spring-2021/memes-to-dremes/memesToDremes.db") # give the exact location of the database file
         self.cur = self.conn.cursor()
     
-    def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentimenet_score):
+    def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
         self.cur.execute("""INSERT INTO influencers_tweets (influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentimenet_score) VALUES (?,?,?,?,?,?);""")
         self.conn.commit()
 
