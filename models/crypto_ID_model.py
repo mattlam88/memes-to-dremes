@@ -13,7 +13,7 @@ class CryptoIDDAO:
     def get_crypto_equivalent_names(self, crypto_ticker):
         lst_equivalent_names = []
 
-        equivalent_names = self.cur.execute(f"""SELECT crypto_equivalent_names FROM crypto_ID WHERE crypto_ticker='{crypto_ticker}';""")
+        equivalent_names = self.cur.execute(f'SELECT crypto_equivalent_names FROM crypto_ID WHERE crypto_ticker="{crypto_ticker}"";')
         for name in equivalent_names:
             lst_equivalent_names.append(name)
         return lst_equivalent_names
