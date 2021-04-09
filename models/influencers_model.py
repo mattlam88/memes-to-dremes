@@ -11,7 +11,7 @@ class InfluencersDAO:
         self.conn.commit()
 
     def get_influencer(self, influencer_name):
-        influencer_data = self.cur.execute(f"""SELECT id, influencer_name, influencer_twitter_acc FROM influencers WHERE influencer_name='{influencer_name}';""")
+        influencer_data = self.cur.execute(f'SELECT id, influencer_name, influencer_twitter_acc FROM influencers WHERE influencer_name="{influencer_name}";')
         influencer_name_data = Influencers(influencer_data[0], influencer_data[1], influencer_data[2])
         return influencer_name_data
     
