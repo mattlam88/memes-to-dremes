@@ -6,7 +6,7 @@ class CryptoIDDAO:
         self.conn = sqlite3.connect("/Users/mattlam/Documents/OSU-Hackathon-Spring-2021/memes-to-dremes/memesToDremes.db") # give the exact location of the database file
         self.cur = self.conn.cursor()
     
-    def add_crypto_id(self, id, crypto_name, crypto_ticker, crypto_equivalent_names):
+    def add_crypto_id(self, crypto_name, crypto_ticker, crypto_equivalent_names):
         self.cur.execute("""INSERT INTO crypto_ID (crypto_name, crypto_ticker, crypto_equivalent_names) VALUES (?,?,?);""")
         self.conn.commit()
 
