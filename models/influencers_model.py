@@ -19,13 +19,23 @@ class InfluencersDAO:
         )
         self.conn.commit()
 
-    def delete_influencer(self, influencer_name):
+    def follow_influencer(self, influencer_twitter_acc):
         self.cur.execute(
             f"""
-            DELETE FROM influencers WHERE influencer_name='{influencer_name}';
+            UPDATE influencers SET following_influencer=1 WHERE influencer_twitter_acc='{influencer_twitter_acc}';
             """
         )
         self.conn.commit()
+
+    def unfollow_influencer(self, influencer_twitter_acc):
+        self.cur.execute(
+            f"""
+            UPDATE influencers SET following_influencer=0 WHERE influencer_twitter_acc='{influencer_twitter_acc}'
+            """
+        )
+        self.conn.commit()
+
+    
 
     def get_influencer(self, influencer_name):
         influencer_data = self.cur.execute(
