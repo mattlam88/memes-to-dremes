@@ -28,7 +28,8 @@ c.execute(
         id INTEGER PRIMARY KEY,
         influencer_user_id TEXT,
         influencer_name TEXT,
-        influcencer_twitter_acc TEXT
+        influencer_twitter_acc TEXT,
+        following_influencer INTEGER
     );
     """
 )

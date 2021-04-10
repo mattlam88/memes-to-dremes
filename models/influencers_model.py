@@ -9,13 +9,21 @@ class InfluencersDAO:
         self.conn = sqlite3.connect(DB_PATH)
         self.cur = self.conn.cursor()
     
-    def add_influencer(self, influencer_user_id, influencer_name, influencer_twitter_acc):
+    def add_influencer(self, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
         self.cur.execute(
             """
-            INSERT INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc) 
-            VALUES (?, ?,?);
+            INSERT INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
+            VALUES (?, ?, ?);
             """,
-            (influencer_user_id, influencer_name, influencer_twitter_acc)
+            (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer)
+        )
+        self.conn.commit()
+
+    def delete_influencer(self, influencer_name):
+        self.cur.execute(
+            f"""
+            DELETE FROM influencers WHERE influencer_name='{influencer_name}';
+            """
         )
         self.conn.commit()
 
@@ -24,7 +32,7 @@ class InfluencersDAO:
             f"""
             SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc 
             FROM influencers 
-            WHERE influencer_name="{influencer_name}";
+            WHERE influencer_name='{influencer_name}';
             """
         )
         influencer_name_data = Influencers(*influencer_data)
