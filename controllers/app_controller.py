@@ -119,7 +119,7 @@ class AppController(BaseController):
         return self.sentimentAnalysis.get_tweet_sentiment(tweetStatus)
 
     def _convertDate(self, date: str) -> str:
-        dateComponents: List[str] = date.split()
+        dateComponents: list[str] = date.split()
         year: str = dateComponents[5]
 
         month: str = self.MONTH_MAP[dateComponents[1]]
