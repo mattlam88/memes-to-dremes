@@ -1,10 +1,11 @@
 import tweepy as tp
 import settings
+import datetime
 
 # Handles authentication by pulling API key information from config file
 auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
 auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-api = tp.API(auth)
+api = tp.API(auth) #, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 
 class StreamListener(tp.StreamListener):
@@ -29,8 +30,33 @@ class StreamListener(tp.StreamListener):
         if status_code == 420:
             return False
 
-class TwitterChannel():
-    pass
+
+class TwitterChannel:
+    """
+    Class is used to fetch historic twitter feed data
+    """
+
+    def get_user_info(self):
+        pass
+
+    def get_user_tweets(self, username):
+        start_date = datetime.datetime(2021, 3, 26, 0, 0, 0, 0)
+        end_date = datetime.datetime(2021, 4, 9, 0, 0, 0, 0)
+
+        tweets = []
+        temp_tweets = tp.api.user_timeline(username)
+        for tweet in temp_tweets:
+            if end_date > tweet.created_at > start_date:
+                tweets.append(tweet)
+
+        while temp_tweets[-1].created_at > start_date:
+            temp_tweets = tp.api.user_timeline(username, max_id=temp_tweets[-1].id)
+            for tweet in temp_tweets:
+                if tweet.id not in tweets:
+                    if end_date > tweet.created_at > start_date:
+                        tweets.append(tweet)
+
+        return tweets
 
 
 def username_to_id(username):
@@ -45,6 +71,10 @@ def username_to_id(username):
 usernames = {}
 keywords = ["bitcoin", "btc"]
 influencers = ["1309965256286973955"]
+"""
+historic_elon = TwitterChannel()
+print(historic_elon.get_user_tweets("elonmusk"))
+"""
 stream_listener = StreamListener()
 stream = tp.Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=keywords, follow=influencers)
