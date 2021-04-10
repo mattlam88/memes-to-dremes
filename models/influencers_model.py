@@ -13,24 +13,34 @@ class InfluencersDAO:
         self.cur.execute(
             """
             INSERT INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
-            VALUES (?, ?, ?);
+            VALUES (?, ?, ?, ?);
             """,
             (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer)
         )
         self.conn.commit()
 
-    def delete_influencer(self, influencer_name):
+    def follow_influencer(self, influencer_twitter_acc):
         self.cur.execute(
             f"""
-            DELETE FROM influencers WHERE influencer_name='{influencer_name}';
+            UPDATE influencers SET following_influencer=1 WHERE influencer_twitter_acc='{influencer_twitter_acc}';
             """
         )
         self.conn.commit()
 
+    def unfollow_influencer(self, influencer_twitter_acc):
+        self.cur.execute(
+            f"""
+            UPDATE influencers SET following_influencer=0 WHERE influencer_twitter_acc='{influencer_twitter_acc}'
+            """
+        )
+        self.conn.commit()
+
+    
+
     def get_influencer(self, influencer_name):
         influencer_data = self.cur.execute(
             f"""
-            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc 
+            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
             FROM influencers 
             WHERE influencer_name='{influencer_name}';
             """
@@ -40,8 +50,9 @@ class InfluencersDAO:
     
 
 class Influencers:
-    def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc):
+    def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
         self._id = id
         self._influencer_user_id = influencer_user_id
         self._influencer_name = influencer_name
         self._influencer_twitter_acc = influencer_twitter_acc
+        self._following_influencer = following_influencer
