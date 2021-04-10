@@ -131,11 +131,20 @@ class AppController(BaseController):
     def _extractTicker(self, tweetStatus) -> str:
         pass
 
-    def removeInfluencer(self, twitterHandle: str) -> None:
-        pass
-
-    def updateTweetHistory(self) -> None:
+    def updateTweetHistory(self, influencer_one, influencer_two, influencer_three, influencer_four, influencer_five, crypto_ticker) -> None:
         # get tweets from database
+        tweets = {}  # Denotes a dictionary of each influencers tweets
+        influencersDAO = InfluencersDAO() # initiates DAO instance
+        influencers_tweets = InfluencersTweetDAO()
+
+        # TODO: will need check who is being followed and then do a of tweets on those individuals
+        influencers = [influencer_one, influencer_two, influencer_three, influencer_four, influencer_five]
+        
+        for person in influencers:
+            # For each individual the person is followed and then pulls their tweet history in the database
+            influencersDAO.follow_influencer(person)
+            tweets[person] = influencers_tweets.get_influencer_tweets(person, crypto_ticker)
+
         # pass tweets to model
         pass
 
