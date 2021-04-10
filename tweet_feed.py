@@ -1,6 +1,6 @@
 import tweepy as tp
 import settings
-import datetime
+from datetime import *
 
 # Handles authentication by pulling API key information from config file
 auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
@@ -41,24 +41,32 @@ class TwitterChannel:
         pass
 
     def get_user_tweets(self, username):
-        start_date = datetime.datetime(2021, 3, 26, 0, 0, 0, 0)
-        end_date = datetime.datetime(2021, 4, 9, 0, 0, 0, 0)
+        start_date = datetime(2021, 3, 26, 0, 0, 0, 0)
 
         tweets = []
         temp_tweets = api.user_timeline(username)
         for tweet in temp_tweets:
-            print(tweet.created_at)
-            #if tweet.created_at < end_date:
-                #tweets.append(tweet)
+            if tweet.created_at > start_date:
+                if tweet.in_reply_to_status_id is None:
+                    print(tweet.text)
+                    tweets.append(tweet)
+                elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
+                    print(tweet.text)
+                    tweets.append(tweet)
 
-        #while temp_tweets[-1].created_at > start_date:
-        #    temp_tweets = api.user_timeline(username, max_id=temp_tweets[-1].id)
-        #    for tweet in temp_tweets:
-        #        if tweet.id not in tweets:
-        #            if end_date > tweet.created_at > start_date:
-        #                tweets.append(tweet)
+        while temp_tweets[-1].created_at > start_date:
+            temp_tweets = api.user_timeline(username, max_id=temp_tweets[-1].id)
+            for tweet in temp_tweets:
+                if tweet.created_at > start_date:
+                    if tweet.in_reply_to_status_id is None:
+                        print(tweet.text)
+                        tweets.append(tweet)
+                    elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
+                        print(tweet.text)
+                        tweets.append(tweet)
 
-        return tweets
+        #print(tweets)
+        #return tweets
 
 
 def username_to_id(username):
