@@ -30,7 +30,7 @@ class InfluencersDAO:
     def get_influencer(self, influencer_name):
         influencer_data = self.cur.execute(
             f"""
-            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc 
+            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
             FROM influencers 
             WHERE influencer_name='{influencer_name}';
             """
@@ -40,8 +40,9 @@ class InfluencersDAO:
     
 
 class Influencers:
-    def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc):
+    def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
         self._id = id
         self._influencer_user_id = influencer_user_id
         self._influencer_name = influencer_name
         self._influencer_twitter_acc = influencer_twitter_acc
+        self._following_influencer = following_influencer
