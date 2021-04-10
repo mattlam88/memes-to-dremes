@@ -33,13 +33,13 @@ class TwitterChannel():
     pass
 
 
-def username_to_id(usernames):
+def username_to_id(username):
     """
-    Takes a list of up to 100 usernames and uses the Twitter API to convert to their corresponding ID numbers
+    Takes a username and uses the Twitter API to return their corresponding ID numbers
     """
-    username_obj = tp.API.lookup_users(screen_names=usernames)
-    user_id_list = [user.id_str for user in username_obj]
-    return user_id_list
+    username_obj = tp.api.get_user(username)
+    user_id = username_obj.id_str
+    return user_id
 
 
 usernames = {}
