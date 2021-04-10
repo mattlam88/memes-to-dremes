@@ -5,10 +5,10 @@ from typing import cast, TYPE_CHECKING
 from PySide2.QtWidgets import QApplication
 import tweepy as tp
 
-import config
 from controllers.app_controller import AppController
 from models.app_model import AppModel
 from models.stream_listener import StreamListener
+from settings import API_KEY, API_SECRET, ACCESS_TOKEN_SECRET, ACCESS_TOKEN
 from views.app_view import AppView
 
 if TYPE_CHECKING:
@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 
 
 # Handles authentication by pulling API key information from config file
-auth = tp.OAuthHandler(config.API_KEY, config.API_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
+auth = tp.OAuthHandler(API_KEY, API_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tp.API(auth)
 
 
