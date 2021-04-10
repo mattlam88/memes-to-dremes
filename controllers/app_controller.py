@@ -6,6 +6,9 @@ from models.app_model import AppModel
 from models.influencers_tweet_model import InfluencersTweet, InfluencersTweetDAO
 from models.influencers_model import Influencers, InfluencersDAO
 from models.crypto_ID_model import CryptoID, CryptoIDDAO
+
+from ShaunsWork.sentimentanalysis import SentimentAnalysis
+
 #function()
 # static_method = InfluencersTweetDAO()
 # When new tweet comes in static_method.add(elon, tweet id, text, date, crypto ticker, sentiment score)
@@ -27,32 +30,28 @@ class AppController(BaseController):
         # pass tweets to model
         pass
 
-    def addTweet(self, value) -> None:
+    def addTweet(self, tweet_data, crypto_ticker) -> None:
         # Create instance of DAO and object
-        # run SentinmentAnalysis, score the tweet
+        influencers_tweet_DAO = InfluencersTweetDAO()
+        # run SentinmentAnalysis, score the tweet, append to tweet data
+        sentiment_score = SentimentAnalysis.get_tweet_sentiment(tweet_data)
         # add tweet to database - running the DAO method to add to the database
+        influencer_twitter_acc = tweet_data['user']['screen_name']
+        tweet_ID = tweet_data['id']
+        tweet_text = tweet_data['text']
+        # convert tweet date-time to ISO-8601 format before adding to database
+        tweet_date_time_list = tweet_data['created_at'].split()
+        tweet_year = tweet_date_time_list[5]
+        month_dict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 
+        'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
+        tweet_month = month_dict[tweet_date_time_list[1]]
+        tweet_day = tweet_date_time_list[2]
+        tweet_time = tweet_date_time_list[3]
+        tweet_date_time = tweet_year + '-' + tweet_month + '-' + tweet_day + ' ' + tweet_time
+        influencers_tweet_DAO.add_influencer_tweet(influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score)
         # pass tweet to model
         # manually trigger signal here
         model: AppModel = cast(AppModel, self.model)
         model.btnText = value
 
 
-class SentimentAnalysis:
-    def __init__(self):
-        # add Influencers tweet model DAO instance
-        pass
-
-    def sentimenet_scorer(self):
-        # create logic that would score each tweet with 1 or 0
-        pass
-    
-    def sentimenet_buy_sell_analysis(self):
-        # pull data using DAO method
-        # run a script to count the zeros and ones
-        # buy or sell = ones / zeros and ones
-        pass
-
-    def sentimenet_buy_sell_analysis_weekly(self):
-        # need the date of the tweets and the count of zeros and ones for each day
-        # store information in JSON
-        pass
