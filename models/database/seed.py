@@ -41,7 +41,7 @@ c.execute(
         tweet_text TEXT,
         tweet_date_time TEXT,
         crypto_ticker TEXT,
-        sentimenet_score INTEGER
+        sentiment_score INTEGER
     );
     """
 )
