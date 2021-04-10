@@ -32,8 +32,8 @@ class App(QApplication):
         self._view: BaseView = AppView(self._model, self._controller)
 
         # run twitter stream
-        self._stream = self._subscribeToTwitterStream()
-        self._stream.filter(track=["bitcoin", "btc"], is_async=True)
+        self._controller.twitterStream = self._subscribeToTwitterStream()
+        cast(AppController, self._controller).startStream()
 
         cast(AppView, self._view).show()
 
