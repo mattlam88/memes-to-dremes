@@ -19,6 +19,7 @@ numpy==1.20.2
 oauthlib==3.1.0
 pandas==1.2.3
 pycodestyle==2.6.0
+pycoingecko==1.4.1
 pylint==2.6.0
 PySide2==5.15.2
 PySocks==1.7.1
