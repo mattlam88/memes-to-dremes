@@ -1,17 +1,15 @@
 import tweepy as tp
+import settings
 
 # Handles authentication by pulling API key information from config file
-auth = tp.OAuthHandler(config.API_KEY, config.API_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
+auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
+auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
 api = tp.API(auth)
-
-#username = input()
-#user_id = tp.API.get_user(username)
 
 
 class StreamListener(tp.StreamListener):
     """
-    Creates a StreamListener object which Tweepy uses to
+    Creates a StreamListener object which Tweepy uses to capture tweets from the Twitter API.
     """
 
     def on_status(self, status):
@@ -21,7 +19,7 @@ class StreamListener(tp.StreamListener):
         """
         if status.user.id_str not in influencers:
             return
-        print(status.text)
+        return status
 
     def on_error(self, status_code):
         """
@@ -31,7 +29,20 @@ class StreamListener(tp.StreamListener):
         if status_code == 420:
             return False
 
+class TwitterChannel():
+    pass
 
+
+def username_to_id(usernames):
+    """
+    Takes a list of up to 100 usernames and uses the Twitter API to convert to their corresponding ID numbers
+    """
+    username_obj = tp.API.lookup_users(screen_names=usernames)
+    user_id_list = [user.id_str for user in username_obj]
+    return user_id_list
+
+
+usernames = {}
 keywords = ["bitcoin", "btc"]
 influencers = ["1309965256286973955"]
 stream_listener = StreamListener()
