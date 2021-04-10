@@ -5,7 +5,7 @@ from datetime import *
 # Handles authentication by pulling API key information from config file
 auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
 auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-api = tp.API(auth)  # , wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+api = tp.API(auth)
 
 
 class StreamListener(tp.StreamListener):
@@ -21,7 +21,7 @@ class StreamListener(tp.StreamListener):
         if status.user.id_str not in influencers:
             return
         print(status.text)
-        #return status
+        # TODO: Figure out how we want to return this information for integration into db
 
     def on_error(self, status_code):
         """
@@ -44,29 +44,21 @@ class TwitterChannel:
         start_date = datetime(2021, 3, 26, 0, 0, 0, 0)
 
         tweets = []
-        temp_tweets = api.user_timeline(username)
-        for tweet in temp_tweets:
-            if tweet.created_at > start_date:
-                if tweet.in_reply_to_status_id is None:
-                    print(tweet.text)
-                    tweets.append(tweet)
-                elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
-                    print(tweet.text)
-                    tweets.append(tweet)
 
-        while temp_tweets[-1].created_at > start_date:
-            temp_tweets = api.user_timeline(username, max_id=temp_tweets[-1].id)
-            for tweet in temp_tweets:
-                if tweet.created_at > start_date:
-                    if tweet.in_reply_to_status_id is None:
-                        print(tweet.text)
-                        tweets.append(tweet)
-                    elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
-                        print(tweet.text)
-                        tweets.append(tweet)
+        for status in tp.Cursor(api.user_timeline, id=username, include_retweets=False).items():
 
-        #print(tweets)
-        #return tweets
+            if status.created_at > start_date:
+
+                if status.in_reply_to_status_id is None:
+                    print("date time is:", status.created_at)
+                    print("tweet is: ", status.text)
+                    tweets.append(status)
+                elif status.in_reply_to_screen_name == username and status.user.screen_name == username:
+                    print("date time is:", status.created_at)
+                    print("tweet is: ", status.text)
+                    tweets.append(status)
+
+        return tweets
 
 
 def username_to_id(username):
@@ -78,14 +70,15 @@ def username_to_id(username):
     return user_id
 
 
-usernames = {}
+# Usernames and keyword will need to be supplied from the user somewhere, these are placeholders
 keywords = ["bitcoin", "btc"]
 influencers = ["1309965256286973955"]
 
-historic_elon = TwitterChannel()
-print(historic_elon.get_user_tweets("elonmusk"))
-"""
+# Used to test historic tweet grabs
+historic_tweets = TwitterChannel()
+print(historic_tweets.get_user_tweets("elonmusk"))
+
+# Code initiates the stream
 stream_listener = StreamListener()
 stream = tp.Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=keywords, follow=influencers)
-"""
