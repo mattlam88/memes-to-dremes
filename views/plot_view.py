@@ -10,12 +10,15 @@ class PlotViewMeta(type(QWidget), type(BasePlotView)):
     pass
 
 
-class PlotView(QWidget, BasePlotView, metaclass=PlotViewMeta):
+class PlotView(QWidget):
     tips = sns.load_dataset("tips")
 
-    def __init__(self, model, controller):
-        QWidget.__init__(self)
-        BasePlotView.__init__(self, model, controller)
+    def __init__(self):
+        super().__init__()
+
+        self._setupView()
+        self._updatePlot()
+        self._connectSignals()
 
     def _setupView(self):
         self.dropdown1 = QComboBox()
