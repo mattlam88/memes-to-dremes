@@ -22,8 +22,15 @@ class CryptoCoin:
     def get_price(self):
         return self._price
 
+    def get_historic_pricing(self, start_date, end_date, fiat="usd"):
+        """
+        Takes start and end dates as UNIX timestamp and returns pricing during that range.
+        """
+        return cg.get_coin_market_chart_range_by_id(id=self._name, vs_currency=fiat, from_timestamp=start_date,
+                                                    to_timestamp=end_date)
+
 # This is just an example to test the code
 btc = CryptoCoin("bitcoin", "btc")
 btc.update_crypto_price()
-print(btc.get_price())
+print(btc.get_historic_pricing("1618023695","1618092150"))
 
