@@ -26,7 +26,7 @@ class CryptoIDDAO:
             f"""
             SELECT crypto_equivalent_names 
             FROM crypto_ID 
-            WHERE crypto_ticker="{crypto_ticker}"";
+            WHERE crypto_ticker="{crypto_ticker}";
             """
         )
         for name in equivalent_names:
