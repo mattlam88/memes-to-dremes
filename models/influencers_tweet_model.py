@@ -31,3 +31,31 @@ class InfluencersTweet:
         self._tweet_date_time = tweet_date_time
         self._crypto_ticker = crypto_ticker
         self._sentiment_score = sentiment_score
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def influencer_twitter_acc(self):
+        return self._influencer_twitter_acc
+    
+    @property
+    def tweet_ID(self):
+        return self._tweet_ID
+
+    @property
+    def tweet_text(self):
+        return self._tweet_text
+    
+    @property
+    def tweet_date_time(self):
+        return self._tweet_date_time
+    
+    @property
+    def crypto_ticker(self):
+        return self._crypto_ticker
+
+    @property
+    def sentiment_score(self):
+        return self._sentiment_score
