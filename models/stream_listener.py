@@ -15,7 +15,7 @@ class StreamListener(tp.StreamListener):
             return
         """
 
-        self.controller.addTweet(status._json, '')
+        self.controller.addTweet(status._json)
 
     def on_error(self, status_code):
         """
