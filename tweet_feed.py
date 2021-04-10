@@ -1,17 +1,16 @@
 import tweepy as tp
+import settings
+from datetime import *
 
 # Handles authentication by pulling API key information from config file
-auth = tp.OAuthHandler(config.API_KEY, config.API_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
-api = tp.API(auth)
-
-#username = input()
-#user_id = tp.API.get_user(username)
+auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
+auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
+api = tp.API(auth)  # , wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 
 class StreamListener(tp.StreamListener):
     """
-    Creates a StreamListener object which Tweepy uses to
+    Creates a StreamListener object which Tweepy uses to capture tweets from the Twitter API.
     """
 
     def on_status(self, status):
@@ -22,6 +21,7 @@ class StreamListener(tp.StreamListener):
         if status.user.id_str not in influencers:
             return
         print(status.text)
+        #return status
 
     def on_error(self, status_code):
         """
@@ -32,8 +32,60 @@ class StreamListener(tp.StreamListener):
             return False
 
 
+class TwitterChannel:
+    """
+    Class is used to fetch historic twitter feed data
+    """
+
+    def get_user_info(self):
+        pass
+
+    def get_user_tweets(self, username):
+        start_date = datetime(2021, 3, 26, 0, 0, 0, 0)
+
+        tweets = []
+        temp_tweets = api.user_timeline(username)
+        for tweet in temp_tweets:
+            if tweet.created_at > start_date:
+                if tweet.in_reply_to_status_id is None:
+                    print(tweet.text)
+                    tweets.append(tweet)
+                elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
+                    print(tweet.text)
+                    tweets.append(tweet)
+
+        while temp_tweets[-1].created_at > start_date:
+            temp_tweets = api.user_timeline(username, max_id=temp_tweets[-1].id)
+            for tweet in temp_tweets:
+                if tweet.created_at > start_date:
+                    if tweet.in_reply_to_status_id is None:
+                        print(tweet.text)
+                        tweets.append(tweet)
+                    elif tweet.in_reply_to_screen_name == username and tweet.user.screen_name == username:
+                        print(tweet.text)
+                        tweets.append(tweet)
+
+        #print(tweets)
+        #return tweets
+
+
+def username_to_id(username):
+    """
+    Takes a username and uses the Twitter API to return their corresponding ID numbers
+    """
+    username_obj = tp.api.get_user(username)
+    user_id = username_obj.id_str
+    return user_id
+
+
+usernames = {}
 keywords = ["bitcoin", "btc"]
 influencers = ["1309965256286973955"]
+
+historic_elon = TwitterChannel()
+print(historic_elon.get_user_tweets("elonmusk"))
+"""
 stream_listener = StreamListener()
 stream = tp.Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=keywords, follow=influencers)
+"""
