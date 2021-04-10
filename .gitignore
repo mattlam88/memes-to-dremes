@@ -139,3 +139,4 @@ settings.py
 
 # App db
 *.db
+identifier.sqlite
