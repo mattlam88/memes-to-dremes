@@ -1,4 +1,3 @@
-import config
 import tweepy as tp
 
 # Handles authentication by pulling API key information from config file

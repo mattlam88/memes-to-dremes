@@ -133,3 +133,10 @@ dmypy.json
 # Node modules
 node_modules/
 package-lock.json
+
+# User settings
+settings.py
+
+# App db
+*.db
+identifier.sqlite
