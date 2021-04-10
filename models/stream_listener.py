@@ -7,9 +7,15 @@ class StreamListener(tp.StreamListener):
     """
 
     controller = None
+    influencers = list()
 
     def on_status(self, status):
-        self.controller.addTweet(status.text)
+        """
+        if status.user.id_str not in self.influencers:
+            return
+        """
+
+        self.controller.addTweet(status._json, '')
 
     def on_error(self, status_code):
         """

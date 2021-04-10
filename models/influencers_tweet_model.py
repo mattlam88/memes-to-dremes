@@ -10,15 +10,34 @@ class InfluencersTweetDAO:
         self.cur = self.conn.cursor()
     
     def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
-        self.cur.execute("""INSERT INTO influencers_tweets (influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score) VALUES (?,?,?,?,?,?);""")
+        self.cur.execute(
+            """
+            INSERT INTO influencer_tweets (
+                influencer_twitter_acc,
+                tweet_ID, 
+                tweet_text, 
+                tweet_date_time, 
+                crypto_ticker, 
+                sentiment_score
+            ) 
+            VALUES (?,?,?,?,?,?);
+            """,
+            (influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score)
+        )
         self.conn.commit()
 
     def get_influencer_tweets(self, influencer_twitter_acc, crypto_ticker):
         all_influencer_tweets = {}
-        tweet_data = self.cur.execute(f'SELECT id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score FROM influencer_tweets WHERE influencer_twitter_acc={influencer_twitter_acc} AND crypto_ticker={crypto_ticker};')
+        tweet_data = self.cur.execute(
+            f"""
+            SELECT id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score
+            FROM influencer_tweets
+            WHERE influencer_twitter_acc="{influencer_twitter_acc}" AND crypto_ticker="{crypto_ticker}";
+            """
+        )
         for data in tweet_data:
             influencer_name = data[1]
-            all_influencer_tweets[influencer_name] = InfluencersTweet(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
+            all_influencer_tweets[influencer_name] = InfluencersTweet(*data)
         return all_influencer_tweets
 
 

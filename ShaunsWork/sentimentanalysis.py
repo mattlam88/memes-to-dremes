@@ -1,6 +1,9 @@
+import json
 import re
+
 from textblob import TextBlob
-from influencers_tweet_model import InfluencersTweetDAO
+
+from models.influencers_tweet_model import InfluencersTweetDAO
 
 
 class SentimentAnalysis:
@@ -20,24 +23,25 @@ class SentimentAnalysis:
         # store information in JSON
         pass
 
-	def get_tweet_sentiment(self, tweet) -> int:
-		'''
-		Utility function to classify sentiment of passed tweet
-		using textblob's sentiment method
-		'''
-		# create TextBlob object of passed tweet text
-		analysis = TextBlob(self.clean_tweet(tweet))
-		# set sentiment
-		if analysis.sentiment.polarity > 0:
-			return 1
-		elif analysis.sentiment.polarity == 0:
-			return 0
-		else:
-			return 0
+    def get_tweet_sentiment(self, tweet) -> int:
+        '''
+        Utility function to classify sentiment of passed tweet
+        using textblob's sentiment method
+        '''
+        # create TextBlob object of passed tweet text
+        tweetTxt = json.dumps(tweet)
+        analysis = TextBlob(self.clean_tweet(tweetTxt))
+        # set sentiment
+        if analysis.sentiment.polarity > 0:
+            return 1
+        elif analysis.sentiment.polarity == 0:
+            return 0
+        else:
+            return 0
 
-	def clean_tweet(self, tweet):
-		'''
-		Utility function to clean tweet text by removing links, special characters
-		using simple regex statements.
-		'''
-		return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
+    def clean_tweet(self, tweet):
+        '''
+        Utility function to clean tweet text by removing links, special characters
+        using simple regex statements.
+        '''
+        return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
