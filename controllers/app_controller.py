@@ -36,23 +36,18 @@ class AppController(BaseController):
         model: AppModel = cast(AppModel, self.model)
         model.btnText = value
 
-
-class SentimentAnalysis:
-    def __init__(self):
-        # add Influencers tweet model DAO instance
-        pass
-
-    def sentimenet_scorer(self):
-        # create logic that would score each tweet with 1 or 0
-        pass
+    """
+    SCENARIO:
     
-    def sentimenet_buy_sell_analysis(self):
-        # pull data using DAO method
-        # run a script to count the zeros and ones
-        # buy or sell = ones / zeros and ones
-        pass
-
-    def sentimenet_buy_sell_analysis_weekly(self):
-        # need the date of the tweets and the count of zeros and ones for each day
-        # store information in JSON
-        pass
+    App started for first time:
+        Start UI but with no information.
+        
+    User add an influencer to follow:
+        Get influencer data from twitter.
+        Add influencer to database.
+        Get historic data from twitter.
+        Perform sentiment analysis on historic data.
+        Add results to database.
+        Add influencer to list of users for streamer to follow.
+        Update UI with new data.
+    """
