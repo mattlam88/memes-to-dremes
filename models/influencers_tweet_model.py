@@ -27,7 +27,7 @@ class InfluencersTweetDAO:
         self.conn.commit()
 
     def get_influencer_tweets(self, influencer_twitter_acc, crypto_ticker):
-        all_influencer_tweets = {}
+        all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
             SELECT id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score
@@ -36,8 +36,8 @@ class InfluencersTweetDAO:
             """
         )
         for data in tweet_data:
-            influencer_name = data[1]
-            all_influencer_tweets[influencer_name] = InfluencersTweet(*data)
+            all_influencer_tweets.append(InfluencersTweet(*data))
+
         return all_influencer_tweets
 
 
