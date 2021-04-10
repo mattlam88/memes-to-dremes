@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
 
-from PySide2.QtWidgets import QMainWindow
+from PySide2.QtWidgets import QMainWindow, QVBoxLayout
 
 from controllers.app_controller import AppController
 from models.app_model import AppModel
@@ -12,6 +12,12 @@ from views.app_ui import Ui_App
 if TYPE_CHECKING:
     from controllers.base_controller import BaseController
     from models.base_model import BaseModel
+
+
+from views.plot_view import PlotView
+from views.influencer_widget import InfluencerWidget
+from views.tweet_widget import TweetWidget
+from views.tweet_stream_widget import TweetStreamWidget
 
 
 class AppViewMeta(type(QMainWindow), type(BaseView)):
@@ -25,14 +31,34 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         QMainWindow.__init__(self)
         BaseView.__init__(self, model, controller, Ui_App())
 
+        """
+        self.ui.plot = PlotView()
+        self.ui.plot.setObjectName(u"plot")
+        self.ui.gridLayout.addWidget(self.ui.plot, 1, 0, 2, 2)
+        """
+        self._influencers = list()
+        self._tweets = list()
+        self._tweetStream = TweetStreamWidget()
+
         self._updateUI()
 
     def _connectSignals(self) -> None:
+        pass
+        """
         self.ui.pushButton_5.clicked.connect(self._onBtnClicked)
         cast(AppModel, self.model).btnTextChanged.connect(self._onBtnTextChanged)
+        """
 
     def _updateUI(self) -> None:
+        # add widgets to ui
+        tweetStreamLayout = QVBoxLayout()
+        tweetStreamLayout.addWidget(self._tweetStream)
+        self.ui.tweetStreamFrame.setLayout(tweetStreamLayout)
+
+    """
+    def _updateUI(self) -> None:
         cast(AppController, self.controller).updateTweetHistory()
+    """
 
     def _onBtnClicked(self) -> None:
         cast(AppController, self.controller).changeBtnText("What's up?")
