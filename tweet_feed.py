@@ -5,7 +5,7 @@ from datetime import *
 # Handles authentication by pulling API key information from config file
 auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
 auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-api = tp.API(auth)  # , wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+api = tp.API(auth)
 
 
 class StreamListener(tp.StreamListener):
@@ -21,7 +21,7 @@ class StreamListener(tp.StreamListener):
         if status.user.id_str not in influencers:
             return
         print(status.text)
-        #return status
+        # TODO: Figure out how we want to return this information for integration into db
 
     def on_error(self, status_code):
         """
@@ -70,14 +70,15 @@ def username_to_id(username):
     return user_id
 
 
-usernames = {}
+# Usernames and keyword will need to be supplied from the user somewhere, these are placeholders
 keywords = ["bitcoin", "btc"]
 influencers = ["1309965256286973955"]
 
+# Used to test historic tweet grabs
 historic_tweets = TwitterChannel()
 print(historic_tweets.get_user_tweets("elonmusk"))
-"""
+
+# Code initiates the stream
 stream_listener = StreamListener()
 stream = tp.Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=keywords, follow=influencers)
-"""
