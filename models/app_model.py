@@ -15,7 +15,7 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     tweetAdded: Signal = Signal(dict)
     influencerFollowed: Signal = Signal(str)
     influencerUnFollowed: Signal = Signal(str)
-    cryptopriceUpdated: Signal = Signal(dict)
+    cryptoPriceUpdated: Signal = Signal(dict)
 
     def __init__(self) -> None:
         QObject.__init__(self)
@@ -23,7 +23,7 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
 
         self._tweetHistory: List[Dict[str, str]] = list()
         self._followingInfluencers: List[str] = list()
-        self._cryptopriceHistory : Dict = {}
+        self._cryptoPriceHistory: Dict[str, float] = dict()
 
     @property
     def tweetHistory(self) -> List[Dict[str, str]]:
@@ -35,13 +35,13 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
         self.tweetHistoryChanged.emit(value)
     
     @property
-    def cryptopriceHistory(self) -> Dict:
-        return self._cryptopriceHistory
+    def cryptoPriceHistory(self) -> Dict[str, float]:
+        return self._cryptoPriceHistory
     
-    @cryptopriceHistory.setter
-    def cryptopriceHistory(self, value: Dict) -> None: 
-        self._cryptopriceHistory : Dict = value
-        self.cryptopriceUpdated.emit(value)
+    @cryptoPriceHistory.setter
+    def cryptoPriceHistory(self, value: Dict[str, float]) -> None:
+        self._cryptoPriceHistory: Dict[str, float] = value
+        self.cryptoPriceUpdated.emit(value)
 
     @property
     def followingInfluencers(self) -> List[str]:
