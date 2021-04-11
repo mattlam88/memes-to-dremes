@@ -74,7 +74,7 @@ class AppController(BaseController):
 
         # Step 2: Add influencer to database.
         influencersDAO: InfluencersDAO = InfluencersDAO()
-        influencersDAO.add_influencer(userID, name, account)
+        influencersDAO.add_influencer(userID, name, account, True)
 
         # Step 3: Get historic tweets for influencer.
         rawTweets: List[Dict[str, Any]] = self._getUserTweets(twitterHandle)
