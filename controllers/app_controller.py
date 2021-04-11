@@ -4,11 +4,16 @@ from typing import cast, Any, Dict, Optional, Tuple
 
 from tweepy import Stream
 
+import re # Python's standard library for regex
+
 from .base_controller import BaseController
 from models.app_model import AppModel
 from models.influencers_tweet_model import InfluencersTweetDAO
 from models.influencers_model import InfluencersDAO
-from ShaunsWork.sentimentanalysis import SentimentAnalysis
+
+from coin_price_controller import CryptoCoin
+from utils.sentimentanalysis import SentimentAnalysis
+
 
 
 class AppController(BaseController):
@@ -121,7 +126,6 @@ class AppController(BaseController):
     def _convertDate(self, date: str) -> str:
         dateComponents: list[str] = date.split()
         year: str = dateComponents[5]
-
         month: str = self.MONTH_MAP[dateComponents[1]]
         day: str = dateComponents[2]
         time: str = dateComponents[3]
@@ -129,7 +133,14 @@ class AppController(BaseController):
         return year + '-' + month + '-' + day + ' ' + time 
 
     def _extractTicker(self, tweetStatus) -> str:
-        pass
+        txt = tweetStatus
+        bitcoin_finder = re.search('bitcoin'|'Bitcoin'|'BITCOIN'|'btc'|'BTC', txt)
+
+        if bitcoin_finder == None:
+            pass
+        else:
+            # if bitcoin is contained in the tweet it will return out the string "BTC"
+            return 'BTC'
 
     def updateTweetHistory(self, influencer_one, influencer_two, influencer_three, influencer_four, influencer_five, crypto_ticker) -> None:
         # get tweets from database
