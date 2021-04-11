@@ -22,7 +22,7 @@ class PieChartWidget(QWidget):
                                   QSizePolicy.Expanding)
         self.canvas.updateGeometry()
 
-    def _updatePlot(self, aggregate_values: tuple):
+    def updatePlot(self, aggregate_values: tuple):
         labels = ['Positive', 'Negative']
         self.ax1.clear()
         self.ax1.pie(aggregate_values, colors = ['green', 'red'], labels=labels, autopct=self.make_autopct(aggregate_values), startangle=45)
