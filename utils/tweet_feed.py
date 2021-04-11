@@ -72,7 +72,6 @@ class TwitterChannel:
         for status in tp.Cursor(self.api.user_timeline, id=username, include_retweets=False).items():
 
             if status.created_at > start_date:
-
                 if status.in_reply_to_status_id is None:
                     print("date time is:", status.created_at)
                     print("tweet is: ", status.text)
@@ -81,6 +80,8 @@ class TwitterChannel:
                     print("date time is:", status.created_at)
                     print("tweet is: ", status.text)
                     tweets.append(status._json)
+            else:
+                break
 
         return tweets
 
