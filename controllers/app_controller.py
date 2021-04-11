@@ -36,7 +36,7 @@ class AppController(BaseController):
 
         self._sentimentAnalysis = SentimentAnalysis()
         self._twitterStream: Stream = Optional[Stream]
-        self._twitterChannel: TwitterChannel = TwitterChannel()
+        self._settings: QSettings = QSettings("MemesToDremes", "App")
 
     """
     WORKFLOWS:
@@ -63,6 +63,9 @@ class AppController(BaseController):
     def twitterChannel(self) -> TwitterChannel:
         return self._twitterChannel
 
+    @property
+    def settings(self) -> QSettings:
+        return self._settings
     def unFollowInfluencer(self, twitterHandle: str) -> None:
         influencersDAO = InfluencersDAO()
         influencersDAO.unfollow_influencer(twitterHandle)
