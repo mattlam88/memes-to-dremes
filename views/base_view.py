@@ -26,8 +26,6 @@ class BaseView(metaclass=abc.ABCMeta):
         if self.ui is not None:
             self.ui.setupUi(self)
 
-        self._connectSignals()
-
     @property
     def model(self) -> Type[BaseModel]:
         return self._model
