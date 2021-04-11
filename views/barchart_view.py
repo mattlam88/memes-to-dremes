@@ -4,7 +4,6 @@ from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayo
 import matplotlib
 import numpy as np
 
-from views.base_plot_view import BasePlotView
 
 class BarChartView(QWidget):
     def __init__(self, historical_data: dict):
@@ -14,6 +13,8 @@ class BarChartView(QWidget):
 
     def _setupView(self):
         self._createFigure()
+        self.layout = QGridLayout(self)
+        self.layout.addWidget(self.canvas)
 
     def _createFigure(self):
         self.fig = Figure()
@@ -24,7 +25,7 @@ class BarChartView(QWidget):
         self.canvas.updateGeometry()
 
     def _updatePlot(self, historical_data: dict):
-        labels = [keys in historical_data.keys()] # dates for each data point in historical data 
+        labels = [keys for keys in historical_data.keys()] # dates for each data point in historical data
         positive_totals = [value[0] for value in historical_data.values()] # get list of positive tweet totals for each day
         negative_totals = [value[1] for value in historical_data.values()] # get list of negative tweet totals for each day
 
@@ -36,9 +37,10 @@ class BarChartView(QWidget):
         # Add some text for labels, title and custom x-axis tick labels, etc.
         self.ax1.set_ylabel('No. Tweets')
         self.ax1.set_title('7-day Sentiment')
-        self.ax1.set_xticks(x,, rotation = 45)
+        #self.ax1.set_xticks(x, rotation=45)
         self.ax1.set_xticklabels(labels)
         self.ax1.legend()
+        self.fig.canvas.draw_idle()
 
         def autolabel(rects):
             """Attach a text label above each bar in *rects*, displaying its height."""
