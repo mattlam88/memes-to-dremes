@@ -9,7 +9,7 @@ from models.influencers_tweet_model import InfluencersTweetDAO
 class SentimentAnalysis:
     def __init__(self):
         # add Influencers tweet model DAO instance
-        self.influencers_tweet_model = InfluencersTweetDAO()
+        #self.influencers_tweet_model = InfluencersTweetDAO()
         pass
     
     def sentiment_buy_sell_analysis_agg(self, influencers_list, crypto_ticker):
