@@ -12,14 +12,14 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_Influencer(object):
     def setupUi(self, Influencer):
         Influencer.setObjectName("Influencer")
-        Influencer.resize(195, 41)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        Influencer.resize(181, 45)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Influencer.sizePolicy().hasHeightForWidth())
         Influencer.setSizePolicy(sizePolicy)
         Influencer.setMinimumSize(QtCore.QSize(0, 0))
-        Influencer.setMaximumSize(QtCore.QSize(195, 41))
+        Influencer.setMaximumSize(QtCore.QSize(181, 45))
         self.horizontalLayout = QtWidgets.QHBoxLayout(Influencer)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.unfollowBtn = QtWidgets.QPushButton(Influencer)

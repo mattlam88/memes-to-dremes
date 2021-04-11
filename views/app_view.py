@@ -109,7 +109,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self.ui.bottomChartFrame.setLayout(linePlotLayout)
 
         self.tweetStream.ui.tweetStreamScrollAreaContents.setLayout(QVBoxLayout())
-        self.tweetStream.ui.followingInfluencersScrollArea.setLayout(QVBoxLayout())
+        self.tweetStream.ui.influencers.setLayout(QVBoxLayout())
 
         cast(AppController, self.controller).updateTweetHistory()
 
@@ -133,7 +133,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
     def _onInfluencerFollowed(self, twitterHandle: str) -> None:
         influencerWidget = InfluencerWidget()
         influencerWidget.ui.twitterHandle.setText(twitterHandle)
-        self.tweetStream.ui.followingInfluencersScrollArea.layout().addWidget(influencerWidget)
+        self.tweetStream.ui.influencers.layout().addWidget(influencerWidget)
     
     def _onCryptoPriceUpdated(self, historic_data):
         self._linePlot.updatePlot(historic_data)
