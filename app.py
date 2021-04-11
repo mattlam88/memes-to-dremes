@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
 from PySide2.QtWidgets import QApplication
+from PySide2 import QtCore
 import tweepy as tp
 
 from controllers.app_controller import AppController
@@ -36,6 +37,11 @@ class App(QApplication):
         cast(AppController, self._controller).startStream()
 
         cast(AppView, self._view).show()
+
+        # self.timer = QtCore.QTimer()
+        # self.timer.setInterval(600)
+        # self.timer.timeout.connect(self._controller.update_plot)
+        # self.timer.start()
 
     def _subscribeToTwitterStream(self) -> Stream:
         stream_listener: StreamListener = StreamListener()

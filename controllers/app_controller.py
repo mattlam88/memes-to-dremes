@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import time
 from typing import cast, Any, Dict, Optional, Tuple
 
 from tweepy import Stream
@@ -30,6 +31,7 @@ class AppController(BaseController):
         'Nov': '11',
         'Dec': '12'
     }
+    TWO_WEEKS = 1209600000 # two weeks of time in milliseconds
 
     def __init__(self, model) -> None:
         super().__init__(model)
@@ -207,3 +209,15 @@ class AppController(BaseController):
 
     def changeBtnText(self, value):
         cast(AppModel, self.model).btnText = value
+
+    def updatePrice(self) -> None:
+        '''
+        Calls crypto coin API at regular interval and updates model
+        '''
+        model: AppModel = cast(AppModel, self.model)
+        cryptocoin = CryptoCoin("bitcoin", "btc")
+        end = time.time()*1000
+        start = now - TWO_WEEKS
+        model.cryptopriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
+
+    

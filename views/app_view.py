@@ -37,9 +37,9 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._influencers = list()
         self._tweets = list()
         self._tweetStream = TweetStreamWidget()
-        self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
-        self._pieChart = PieChartWidget((10, 10))
-        self._linePlot= LinePlotWidget({'prices': [[1618023871411, 58760.18558489944], [1618024218576, 59411.13328766664]]})
+        self._barChart = BarChartWidget()
+        self._pieChart = PieChartWidget()
+        self._linePlot= LinePlotWidget()
 
         self._connectSignals()
         self._updateUI()
@@ -63,6 +63,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         model.tweetAdded.connect(self._onNewTweetAdded)
         model.influencerFollowed.connect(self._onInfluencerFollowed)
         model.influencerUnFollowed.connect(self._onInfluencerUnFollowed)
+        model.cryptopriceUpdated.connect(self._onCryptoPriceUpdated)
 
     def _updateUI(self) -> None:
         # add widgets to ui
@@ -108,6 +109,10 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         influencerWidget = InfluencerWidget()
         influencerWidget.ui.twitterHandle.setText(twitterHandle)
         self.tweetStream.ui.followingInfluencersScrollArea.layout().addWidget(influencerWidget)
+    
+    def _onCryptoPriceUpdated(self, historic_data):
+        self._linePlot.updatePlot(historic_data)
+
 
     def _onInfluencerUnFollowed(self, twitterHandle: str) -> None:
         pass
