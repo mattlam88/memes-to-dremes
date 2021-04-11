@@ -15,10 +15,10 @@ import matplotlib.dates as mdates
 
 
 class LinePlotWidget(QWidget):
-    def __init__(self, historic_pricing: dict):
+    def __init__(self):
         super().__init__()
         self._setupView()
-        self._updatePlot(historic_pricing)
+        self._createFigure()
 
     def _setupView(self):
         self._createFigure()
