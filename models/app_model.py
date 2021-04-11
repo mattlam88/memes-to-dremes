@@ -1,4 +1,4 @@
-from typing import Dict, List, Type
+from typing import Dict, List
 
 from PySide2.QtCore import QObject, Signal
 

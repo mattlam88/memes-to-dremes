@@ -131,8 +131,26 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="file">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionSettings"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <addaction name="file"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -74,10 +74,19 @@ class Ui_App(object):
         self.menubar = QtWidgets.QMenuBar(App)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 21))
         self.menubar.setObjectName("menubar")
+        self.file = QtWidgets.QMenu(self.menubar)
+        self.file.setObjectName("file")
         App.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(App)
         self.statusbar.setObjectName("statusbar")
         App.setStatusBar(self.statusbar)
+        self.actionSettings = QtWidgets.QAction(App)
+        self.actionSettings.setObjectName("actionSettings")
+        self.actionClose = QtWidgets.QAction(App)
+        self.actionClose.setObjectName("actionClose")
+        self.file.addAction(self.actionSettings)
+        self.file.addAction(self.actionClose)
+        self.menubar.addAction(self.file.menuAction())
 
         self.retranslateUi(App)
         QtCore.QMetaObject.connectSlotsByName(App)
@@ -85,5 +94,8 @@ class Ui_App(object):
     def retranslateUi(self, App):
         _translate = QtCore.QCoreApplication.translate
         App.setWindowTitle(_translate("App", "MainWindow"))
+        self.file.setTitle(_translate("App", "&File"))
+        self.actionSettings.setText(_translate("App", "&Settings"))
+        self.actionClose.setText(_translate("App", "&Close"))
 
 

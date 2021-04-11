@@ -1,12 +1,11 @@
+import os
 import sqlite3
-
-from settings import DB_PATH
 
 
 class CryptoIDDAO:
-    def __init__(self):
+    def __init__(self, db_path, db_name):
         # will include various statements that will pull information from the database or insert in the database
-        self.conn = sqlite3.connect(DB_PATH) # give the exact location of the database file
+        self.conn = sqlite3.connect(os.path.join(db_path, db_name)) # give the exact location of the database file
         self.cur = self.conn.cursor()
     
     def add_crypto_id(self, crypto_name, crypto_ticker, crypto_equivalent_names):

@@ -48,6 +48,20 @@ c.execute(
     """
 )
 
+c.execute(
+    """
+    CREATE UNIQUE INDEX influencers_user_id
+    ON influencers (influencer_user_id);
+    """
+)
+
+c.execute(
+    """
+    CREATE UNIQUE INDEX influencers_tweets_tweet_id
+    ON influencer_tweets (tweet_ID);
+    """
+)
+
 conn.commit()
 c.close()
 

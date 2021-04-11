@@ -1,18 +1,17 @@
+import os
 import sqlite3
-
-from settings import DB_PATH
 
 
 class InfluencersTweetDAO:
-    def __init__(self):
+    def __init__(self, db_path, db_name):
         # will include various statements that will pull information from the database or insert in the database
-        self.conn = sqlite3.connect(DB_PATH) # give the exact location of the database file
+        self.conn = sqlite3.connect(os.path.join(db_path, db_name)) # give the exact location of the database file
         self.cur = self.conn.cursor()
     
     def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
         self.cur.execute(
             """
-            INSERT INTO influencer_tweets (
+            INSERT or IGNORE INTO influencer_tweets (
                 influencer_twitter_acc,
                 tweet_ID, 
                 tweet_text, 

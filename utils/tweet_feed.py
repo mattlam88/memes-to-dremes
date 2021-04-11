@@ -4,19 +4,25 @@ from datetime import *
 
 from typing import Tuple
 
-# Handles authentication by pulling API key information from config file
-auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
-auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-api = tp.API(auth)
-
 
 class StreamListener(tp.StreamListener):
     """
     Creates a StreamListener object which Tweepy uses to capture tweets from the Twitter API.
     """
 
-    controller = None
-    influencers = list()
+    def __init__(self, api, controller, influencers):
+        super().__init__(api)
+
+        self._controller = controller
+        self._influencers = influencers
+
+    @property
+    def controller(self):
+        return self._controller
+
+    @property
+    def influencers(self):
+        return self._influencers
 
     def on_status(self, status):
         """
@@ -43,9 +49,12 @@ class TwitterChannel:
     """
     Class is used to fetch historic twitter feed data
     """
-    auth = tp.OAuthHandler(settings.API_KEY, settings.API_SECRET)
-    auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_TOKEN_SECRET)
-    api = tp.API(auth)
+    def __init__(self, api):
+        self._api = api
+
+    @property
+    def api(self):
+        return self._api
 
     def get_user_info(self, twitter_handle: str) -> Tuple[str, str, str]:
         user = self.api.get_user(twitter_handle)
@@ -60,7 +69,7 @@ class TwitterChannel:
 
         tweets = []
 
-        for status in tp.Cursor(api.user_timeline, id=username, include_retweets=False).items():
+        for status in tp.Cursor(self.api.user_timeline, id=username, include_retweets=False).items():
 
             if status.created_at > start_date:
 
@@ -83,18 +92,3 @@ def username_to_id(username):
     username_obj = tp.api.get_user(username)
     user_id = username_obj.id_str
     return user_id
-
-"""
-# Usernames and keyword will need to be supplied from the user somewhere, these are placeholders
-keywords = ["bitcoin", "btc"]
-influencers = ["1309965256286973955"]
-
-# Used to test historic tweet grabs
-historic_tweets = TwitterChannel()
-print(historic_tweets.get_user_tweets("elonmusk"))
-
-# Code initiates the stream
-stream_listener = StreamListener()
-stream = tp.Stream(auth=api.auth, listener=stream_listener)
-stream.filter(track=keywords, follow=influencers)
-"""
