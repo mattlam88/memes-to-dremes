@@ -1,4 +1,5 @@
 from pycoingecko import CoinGeckoAPI
+import pandas as pd
 
 cg = CoinGeckoAPI()
 
@@ -30,7 +31,7 @@ class CryptoCoin:
                                                     to_timestamp=end_date)
 
 # This is just an example to test the code
-# btc = CryptoCoin("bitcoin", "btc")
-# btc.update_crypto_price()
-# print(btc.get_historic_pricing("1618023695","1618092150"))
+#btc = CryptoCoin("bitcoin", "btc")
+#btc.update_crypto_price()
+#print(btc.get_historic_pricing("1618023695","1618092150"))
 
