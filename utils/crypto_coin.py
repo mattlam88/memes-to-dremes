@@ -1,4 +1,5 @@
 from pycoingecko import CoinGeckoAPI
+import pandas as pd
 
 cg = CoinGeckoAPI()
 
@@ -29,8 +30,11 @@ class CryptoCoin:
         return cg.get_coin_market_chart_range_by_id(id=self._name, vs_currency=fiat, from_timestamp=start_date,
                                                     to_timestamp=end_date)
 
+    def get_current_price(self, fiat="usd"):
+        return cg.get_price(ids=self._name, vs_currencies=fiat)
+
 # This is just an example to test the code
-# btc = CryptoCoin("bitcoin", "btc")
-# btc.update_crypto_price()
-# print(btc.get_historic_pricing("1618023695","1618092150"))
+#btc = CryptoCoin("bitcoin", "btc")
+#btc.update_crypto_price()
+#print(btc.get_historic_pricing("1618023695","1618092150"))
 
