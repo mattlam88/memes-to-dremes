@@ -160,22 +160,31 @@ class AppController(BaseController):
         # if bitcoin is contained in the tweet it will return out the string "BTC"
         return 'BTC'
 
-    def updateTweetHistory(self, influencer_one, influencer_two, influencer_three, influencer_four, influencer_five, crypto_ticker) -> None:
+    def updateTweetHistory(self) -> None:
         # get tweets from database
-        tweets = {}  # Denotes a dictionary of each influencers tweets
+        tweets = list()
         influencersDAO = InfluencersDAO() # initiates DAO instance
         influencers_tweets = InfluencersTweetDAO()
 
-        # TODO: will need check who is being followed and then do a of tweets on those individuals
-        influencers = [influencer_one, influencer_two, influencer_three, influencer_four, influencer_five]
+        # get influencers from db
+        influencers = influencersDAO.get_influencers()
 
+        # TODO: will need check who is being followed and then do a of tweets on those individuals
         for person in influencers:
+            if not person.following_influencer:
+                continue
+
             # For each individual the person is followed and then pulls their tweet history in the database
-            influencersDAO.follow_influencer(person)
-            tweets[person] = influencers_tweets.get_influencer_tweets(person, crypto_ticker)
+            # influencersDAO.follow_influencer(person)
+            _tweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
+            influencerTweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
+
+            for influencerTweet in influencerTweets:
+                tweets.append(influencerTweet.to_dict())
 
         # pass tweets to model
-        pass
+        for tweet in tweets:
+            cast(AppModel, self.model).addTweet(tweet)
 
     def startStream(self) -> None:
         self.twitterStream.influencers = self._getInfluencerIds()
