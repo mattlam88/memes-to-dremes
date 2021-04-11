@@ -25,7 +25,7 @@ class PieChartWidget(QWidget):
     def _updatePlot(self, aggregate_values: tuple):
         labels = ['Positive', 'Negative']
         self.ax1.clear()
-        self.ax1.pie(aggregate_values, labels=labels, autopct=self.make_autopct(aggregate_values), startangle=90)
+        self.ax1.pie(aggregate_values, colors = ['green', 'red'], labels=labels, autopct=self.make_autopct(aggregate_values), startangle=45)
         self.ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.()
         self.ax1.title.set_text('Sentiment of Today\'s Tweets')
         self.fig.canvas.draw_idle()

@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 
 from widgets.bar_chart_widget import BarChartWidget
 from widgets.demo_plot_widget import DemoPlotWidget
+from widgets.influencer_widget import InfluencerWidget
 from widgets.pie_chart_widget import PieChartWidget
+from widgets.tweet_widget import TweetWidget
 from widgets.tweet_stream_widget import TweetStreamWidget
 
 
@@ -31,25 +33,34 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         QMainWindow.__init__(self)
         BaseView.__init__(self, model, controller, Ui_App())
 
-        """
-        self.ui.plot = PlotView()
-        self.ui.plot.setObjectName(u"plot")
-        self.ui.gridLayout.addWidget(self.ui.plot, 1, 0, 2, 2)
-        """
         self._influencers = list()
         self._tweets = list()
         self._tweetStream = TweetStreamWidget()
-        self._barChart = BarChartWidget({"k1": [1, 2], "k2": [3, 4]})
+        self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
         self._pieChart = PieChartWidget((10, 10))
 
+        self._connectSignals()
         self._updateUI()
 
+    @property
+    def tweetStream(self) -> TweetStreamWidget:
+        return self._tweetStream
+
+    @property
+    def barChart(self) -> BarChartWidget:
+        return self._barChart
+
+    @property
+    def pieChart(self) -> PieChartWidget:
+        return self._pieChart
+
     def _connectSignals(self) -> None:
-        pass
-        """
-        self.ui.pushButton_5.clicked.connect(self._onBtnClicked)
-        cast(AppModel, self.model).btnTextChanged.connect(self._onBtnTextChanged)
-        """
+        self.tweetStream.ui.followInfluencerBtn.clicked.connect(self._onFollowInfluencerBtnClicked)
+        model: AppModel = cast(AppModel, self.model)
+        model.tweetHistoryChanged.connect(self._onTweetHistoryChanged)
+        model.tweetAdded.connect(self._onNewTweetAdded)
+        model.influencerFollowed.connect(self._onInfluencerFollowed)
+        model.influencerUnFollowed.connect(self._onInfluencerUnFollowed)
 
     def _updateUI(self) -> None:
         # add widgets to ui
@@ -70,13 +81,32 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         demoChart.addWidget(plot)
         self.ui.bottomChartFrame.setLayout(demoChart)
 
-    """
-    def _updateUI(self) -> None:
+        self.tweetStream.ui.tweetStreamScrollAreaContents.setLayout(QVBoxLayout())
+        self.tweetStream.ui.followingInfluencersScrollArea.setLayout(QVBoxLayout())
+
         cast(AppController, self.controller).updateTweetHistory()
-    """
 
-    def _onBtnClicked(self) -> None:
-        cast(AppController, self.controller).changeBtnText("What's up?")
+    def _onFollowInfluencerBtnClicked(self) -> None:
+        twitterHandle: str = self.tweetStream.ui.lineEditTwitterHandle.text()
+        cast(AppController, self.controller).followInfluencer(twitterHandle)
+        self.tweetStream.ui.lineEditTwitterHandle.clear()
 
-    def _onBtnTextChanged(self) -> None:
-        self.ui.pushButton_5.setText(cast(AppModel, self.model).btnText)
+    def _onTweetHistoryChanged(self) -> None:
+        # update graphs and tweet stream display
+        pass
+
+    def _onNewTweetAdded(self, tweet) -> None:
+        tweetWidget = TweetWidget()
+        tweetWidget.ui.tweet.setText(tweet.get("tweetText"))
+        tweetWidget.ui.twitterHandle.setText("@" + tweet.get("screenName"))
+        tweetWidget.ui.cryptoTicker.setText(tweet.get("cryptoTicker"))
+
+        self.tweetStream.ui.tweetStreamScrollAreaContents.layout().addWidget(tweetWidget)
+
+    def _onInfluencerFollowed(self, twitterHandle: str) -> None:
+        influencerWidget = InfluencerWidget()
+        influencerWidget.ui.twitterHandle.setText(twitterHandle)
+        self.tweetStream.ui.followingInfluencersScrollArea.layout().addWidget(influencerWidget)
+
+    def _onInfluencerUnFollowed(self, twitterHandle: str) -> None:
+        pass

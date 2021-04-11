@@ -35,8 +35,6 @@ class InfluencersDAO:
         )
         self.conn.commit()
 
-    
-
     def get_influencer(self, influencer_name):
         influencer_data = self.cur.execute(
             f"""
@@ -47,7 +45,17 @@ class InfluencersDAO:
         )
         influencer_name_data = Influencers(*influencer_data)
         return influencer_name_data
-    
+
+    def get_influencers(self):
+        influencers_data = self.cur.execute(
+            f"""
+            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
+            FROM influencers;
+            """
+        )
+        influencers = [Influencers(*data) for data in influencers_data]
+        return influencers
+
 
 class Influencers:
     def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
@@ -56,3 +64,15 @@ class Influencers:
         self._influencer_name = influencer_name
         self._influencer_twitter_acc = influencer_twitter_acc
         self._following_influencer = following_influencer
+
+    @property
+    def influencer_user_id(self):
+        return self._influencer_user_id
+
+    @property
+    def influencer_twitter_acc(self):
+        return self._influencer_twitter_acc
+
+    @property
+    def following_influencer(self):
+        return self._following_influencer

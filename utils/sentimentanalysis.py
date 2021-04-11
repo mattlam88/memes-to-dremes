@@ -12,7 +12,7 @@ class SentimentAnalysis:
         self.influencers_tweet_model = InfluencersTweetDAO()
         pass
     
-    def sentiment_buy_sell_analysis_agg(self):
+    def sentiment_buy_sell_analysis_agg(self, influencers_list, crypto_ticker):
         # pull data using DAO method
         # run a script to count the zeros and ones
         # buy or sell = ones / zeros and ones
