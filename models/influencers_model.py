@@ -45,7 +45,17 @@ class InfluencersDAO:
         )
         influencer_name_data = Influencers(*influencer_data)
         return influencer_name_data
-    
+
+    def get_influencers(self):
+        influencers_data = self.cur.execute(
+            f"""
+            SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
+            FROM influencers;
+            """
+        )
+        influencers = [Influencers(*data) for data in influencers_data]
+        return influencers
+
 
 class Influencers:
     def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
