@@ -3,7 +3,9 @@ from __future__ import annotations
 import re
 from typing import cast, Any, Dict, Optional, Tuple
 
-from tweepy import Stream
+from PySide2.QtCore import QSettings
+import tweepy as tp
+from tweepy import API, Stream
 
 from .base_controller import BaseController
 from models.app_model import AppModel
@@ -34,10 +36,12 @@ class AppController(BaseController):
     def __init__(self, model) -> None:
         super().__init__(model)
 
+        self._api = None
         self._sentimentAnalysis = SentimentAnalysis()
         self._twitterStream: Stream = Optional[Stream]
         self._settings: QSettings = QSettings("MemesToDremes", "App")
 
+        self._configureApi()
     """
     WORKFLOWS:
 
@@ -46,6 +50,14 @@ class AppController(BaseController):
     3. Influencer makes a tweet.
     4. User reopens app after closing it.
     """
+
+    @property
+    def api(self) -> API:
+        return self._api
+
+    @api.setter
+    def api(self, value: API) -> None:
+        self._api = value
 
     @property
     def twitterStream(self) -> Stream:
@@ -66,6 +78,17 @@ class AppController(BaseController):
     @property
     def settings(self) -> QSettings:
         return self._settings
+
+    def _configureApi(self) -> None:
+        API_KEY: str = self.settings.value("API_KEY", '')
+        API_SECRET: str = self.settings.value("API_SECRET", '')
+        ACCESS_TOKEN: str = self.settings.value("ACCESS_TOKEN", '')
+        ACCESS_TOKEN_SECRET: str = self.settings.value("ACCESS_TOKEN_SECRET", '')
+
+        auth = tp.OAuthHandler(API_KEY, API_SECRET)
+        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        self.api = tp.API(auth)
+
     def unFollowInfluencer(self, twitterHandle: str) -> None:
         influencersDAO = InfluencersDAO()
         influencersDAO.unfollow_influencer(twitterHandle)
