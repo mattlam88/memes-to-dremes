@@ -36,7 +36,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._influencers = list()
         self._tweets = list()
         self._tweetStream = TweetStreamWidget()
-        self._barChart = BarChartWidget({"k1": [1, 2], "k2": [3, 4]})
+        self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
         self._pieChart = PieChartWidget((10, 10))
 
         self._connectSignals()
