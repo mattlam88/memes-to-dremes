@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
 
-from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSettings, QPoint, QSize
 from PySide2.QtWidgets import QAction, QMainWindow, QVBoxLayout
 
 if TYPE_CHECKING:
@@ -43,7 +43,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._tweetStream = TweetStreamWidget()
         self._barChart = BarChartWidget()
         self._pieChart = PieChartWidget()
-        self._linePlot= LinePlotWidget()
+        self._linePlot = LinePlotWidget()
 
         self._settingsDialogModel = AppSettingsModel()
         self._settingsDialogController = AppSettingsController(self._settingsDialogModel)
@@ -75,7 +75,8 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
             self.resize(settings.value("window size"))
             self.move(settings.value("window position"))
         except:
-            pass
+            self.resize(QSize(1200, 900))
+            self.move(QPoint(0, 0))
 
     def _connectSignals(self) -> None:
         self.tweetStream.ui.followInfluencerBtn.clicked.connect(self._onFollowInfluencerBtnClicked)
@@ -160,7 +161,8 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         controller.updateTweetHistory()
 
     def closeEvent(self, event: QCloseEvent) -> None:
-        self.settings.setValue("window size", self.size())
-        self.settings.setValue("window position", self.pos())
+        settings: QSettings = cast(AppController, self.controller).settings
+        settings.setValue("window size", self.size())
+        settings.setValue("window position", self.pos())
         cast(AppController, self.controller).tearDown()
         event.accept()
