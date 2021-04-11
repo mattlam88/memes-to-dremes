@@ -89,6 +89,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         model.influencerFollowed.connect(self._onInfluencerFollowed)
         model.influencerUnFollowed.connect(self._onInfluencerUnFollowed)
         model.cryptoPriceUpdated.connect(self._onCryptoPriceUpdated)
+        model.aggregateScoreUpdated.connect(self._onAggregateScoreUpdated)
 
     def _updateUI(self) -> None:
         # add widgets to ui
@@ -134,12 +135,15 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         influencerWidget = InfluencerWidget()
         influencerWidget.ui.twitterHandle.setText(twitterHandle)
         self.tweetStream.ui.influencers.layout().addWidget(influencerWidget)
-    
+
     def _onCryptoPriceUpdated(self, historic_data):
         self._linePlot.updatePlot(historic_data)
 
     def _onInfluencerUnFollowed(self, twitterHandle: str) -> None:
         pass
+
+    def _onAggregateScoreUpdated(self, score) -> None:
+        self.pieChart.updatePlot(score)
 
     def _onSettingsBtnClicked(self) -> None:
         settings: QSettings = cast(AppController, self.controller).settings

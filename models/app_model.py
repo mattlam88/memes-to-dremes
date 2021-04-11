@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from PySide2.QtCore import QObject, Signal
 
@@ -16,6 +16,7 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     influencerFollowed: Signal = Signal(str)
     influencerUnFollowed: Signal = Signal(str)
     cryptoPriceUpdated: Signal = Signal(dict)
+    aggregateScoreUpdated: Signal = Signal(tuple)
 
     def __init__(self) -> None:
         QObject.__init__(self)
@@ -24,6 +25,7 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
         self._tweetHistory: List[Dict[str, str]] = list()
         self._followingInfluencers: List[str] = list()
         self._cryptoPriceHistory: Dict[str, float] = dict()
+        self._aggregateScore: Tuple[int, int] = (0, 0)
 
     @property
     def tweetHistory(self) -> List[Dict[str, str]]:
@@ -46,6 +48,15 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     @property
     def followingInfluencers(self) -> List[str]:
         return self._followingInfluencers
+
+    @property
+    def aggregateScore(self) -> Tuple[int, int]:
+        return self._aggregateScore
+
+    @aggregateScore.setter
+    def aggregateScore(self, value: Tuple[int, int]) -> None:
+        self._aggregateScore = value
+        self.aggregateScoreUpdated.emit(value)
 
     def addTweet(self, tweet) -> None:
         self.tweetHistory.append(tweet)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 import os
 import re
 import time
@@ -260,6 +261,13 @@ class AppController(BaseController):
         influencers = influencersDAO.get_influencers()
 
         return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
+
+    def computeAggregateScore(self) -> None:
+        tweetDAO = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
+        scores: List[int] = tweetDAO.get_daily_sentiment_score(current_date=str(datetime.today()))
+
+        model: AppModel = cast(AppModel, self.model)
+        model.aggregateScore = scores.count(1), scores.count(0)
 
     def tearDown(self) -> None:
         self.twitterStream.disconnect()
