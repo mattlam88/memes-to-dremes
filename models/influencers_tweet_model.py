@@ -12,7 +12,7 @@ class InfluencersTweetDAO:
     def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
         self.cur.execute(
             """
-            INSERT INTO influencer_tweets (
+            INSERT or IGNORE INTO influencer_tweets (
                 influencer_twitter_acc,
                 tweet_ID, 
                 tweet_text, 

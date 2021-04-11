@@ -15,7 +15,7 @@ class InfluencersDAO:
         """
         self.cur.execute(
             """
-            INSERT INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
+            INSERT or IGNORE INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
             VALUES (?, ?, ?, ?);
             """,
             (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer)
