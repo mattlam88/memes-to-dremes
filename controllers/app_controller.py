@@ -63,7 +63,12 @@ class AppController(BaseController):
     def twitterChannel(self) -> TwitterChannel:
         return self._twitterChannel
 
-    def addInfluencer(self, twitterHandle: str) -> None:
+    def unFollowInfluencer(self, twitterHandle: str) -> None:
+        influencersDAO = InfluencersDAO()
+        influencersDAO.unfollow_influencer(twitterHandle)
+        cast(AppModel, self.model).unFollowInfluencer(twitterHandle)
+
+    def followInfluencer(self, twitterHandle: str) -> None:
         """
         Adds a new influencer to the local database, pulls their tweets, updates sentiment scores, and updates UI.
 
