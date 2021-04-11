@@ -39,7 +39,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._tweetStream = TweetStreamWidget()
         self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
         self._pieChart = PieChartWidget((10, 10))
-        self._linePlot= LineChartWidget({'prices': [[1618023871411, 58760.18558489944], [1618024218576, 59411.13328766664]])
+        self._linePlot= LinePlotWidget({'prices': [[1618023871411, 58760.18558489944], [1618024218576, 59411.13328766664]]})
 
         self._connectSignals()
         self._updateUI()

@@ -18,7 +18,7 @@ class LinePlotWidget(QWidget):
     def __init__(self, historic_pricing: dict):
         super().__init__()
         self._setupView()
-        self._updatePlot(historical_pricing)
+        self._updatePlot(historic_pricing)
 
     def _setupView(self):
         self._createFigure()
@@ -38,7 +38,9 @@ class LinePlotWidget(QWidget):
         df['time'] = pd.to_datetime(df['time'], unit='ms')
         df.set_index('time', inplace = True, drop = True)
         df.plot(kind = 'line', ax = self.ax1, xlabel = 'date', ylabel = 'price (USD)', x_compat=True)
+        self.ax1.get_legend().remove()
+        self.ax1.set_title('Crypto Price Tracker')
         # Create custom ticks using matplotlib date tick locator and formatter
         self.ax1.xaxis.set_major_locator(mdates.DayLocator())
-        self.ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+        self.ax1.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
         self.fig.canvas.draw_idle()
