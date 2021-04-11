@@ -7,7 +7,7 @@ import tweepy as tp
 
 from controllers.app_controller import AppController
 from models.app_model import AppModel
-from models.stream_listener import StreamListener
+from utils.stream_listener import StreamListener
 from settings import API_KEY, API_SECRET, ACCESS_TOKEN_SECRET, ACCESS_TOKEN
 from views.app_view import AppView
 
