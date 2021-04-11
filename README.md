@@ -14,7 +14,7 @@ pip install -r requirements.txt
 * Python
 * sqlite3
 * PyQt
-* MATLAB Plot
+* matplotlib
 
 # Visuals
 
