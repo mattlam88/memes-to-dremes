@@ -34,9 +34,8 @@ class AppController(BaseController):
         super().__init__(model)
 
         self._sentimentAnalysis = SentimentAnalysis()
-        # TODO: add instance of twitter api class for making calls to api
-
         self._twitterStream: Stream = Optional[Stream]
+        self._twitterChannel: TwitterChannel = TwitterChannel()
 
     """
     WORKFLOWS:
@@ -58,6 +57,10 @@ class AppController(BaseController):
     @property
     def sentimentAnalysis(self) -> SentimentAnalysis:
         return self._sentimentAnalysis
+
+    @property
+    def twitterChannel(self) -> TwitterChannel:
+        return self._twitterChannel
 
     def addInfluencer(self, twitterHandle: str) -> None:
         """
