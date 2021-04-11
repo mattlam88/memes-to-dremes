@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, List, TYPE_CHECKING
 
 from PySide2.QtWidgets import QApplication
+from PySide2 import QtCore
 import tweepy as tp
 
 from controllers.app_controller import AppController

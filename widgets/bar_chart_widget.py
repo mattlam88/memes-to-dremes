@@ -16,10 +16,10 @@ from datetime import datetime
 
 
 class BarChartWidget(QWidget):
-    def __init__(self, historical_data: dict):
+    def __init__(self):
         super().__init__()
         self._setupView()
-        self._updatePlot(historical_data)
+        self._createFigure()
 
     def _setupView(self):
         self._createFigure()
