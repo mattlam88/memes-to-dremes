@@ -1,19 +1,17 @@
 from __future__ import annotations
 
+import re
 from typing import cast, Any, Dict, Optional, Tuple
 
 from tweepy import Stream
-
-import re # Python's standard library for regex
 
 from .base_controller import BaseController
 from models.app_model import AppModel
 from models.influencers_tweet_model import InfluencersTweetDAO
 from models.influencers_model import InfluencersDAO
-
-from coin_price_controller import CryptoCoin
+from utils.crypto_coin import CryptoCoin
 from utils.sentimentanalysis import SentimentAnalysis
-
+from utils.tweet_feed import TwitterChannel
 
 
 class AppController(BaseController):
