@@ -40,6 +40,20 @@ class InfluencersTweetDAO:
 
         return all_influencer_tweets
 
+    def get_all_influencer_tweets(self, influencer_twitter_acc):
+        all_influencer_tweets = []
+        tweet_data = self.cur.execute(
+            f"""
+            SELECT id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score
+            FROM influencer_tweets
+            WHERE influencer_twitter_acc="{influencer_twitter_acc}";
+            """
+        )
+        for data in tweet_data:
+            all_influencer_tweets.append(InfluencersTweet(*data))
+
+        return all_influencer_tweets
+
     def get_weekly_sentiment_score(self, start_date, end_date, twitter_handle):
         weekly_sentiment_count = []
 
