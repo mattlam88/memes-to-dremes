@@ -244,7 +244,7 @@ class AppController(BaseController):
         return keywords
 
     def _dbExists(self) -> bool:
-        dbPath: str = self.settings.value("DB_PATH", '') + '\\' + self.settings.value("DB_NAME", '')
+        dbPath: str = os.path.join(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         return os.path.isfile(dbPath)
 
     def getInfluencerIds(self) -> List[str]:
