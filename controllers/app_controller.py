@@ -88,11 +88,11 @@ class AppController(BaseController):
 
     # TODO: use class for api calls to retrieve user data.
     def _getUserData(self, twitterHandle: str) -> Tuple[str, str, str]:
-        pass
+        return self.twitterChannel.get_user_info(twitterHandle)
 
     # TODO: use class for api calls to retrieve user tweet history.
     def _getUserTweets(self, twitterHandle: str) -> List[Dict[str, Any]]:
-        pass
+        return self.twitterChannel.get_user_tweets(twitterHandle)
 
     def addTweet(self, tweetStatus) -> None:
         # run SentimentAnalysis, score the tweet, append to tweet data
