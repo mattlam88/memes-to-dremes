@@ -258,12 +258,8 @@ class AppController(BaseController):
 
         return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
 
-<<<<<<< HEAD
     def tearDown(self) -> None:
         self.twitterStream.disconnect()
-=======
-    def changeBtnText(self, value):
-        cast(AppModel, self.model).btnText = value
 
     def updatePrice(self) -> None:
         '''
@@ -272,8 +268,5 @@ class AppController(BaseController):
         model: AppModel = cast(AppModel, self.model)
         cryptocoin = CryptoCoin("bitcoin", "btc")
         end = time.time()*1000
-        start = now - TWO_WEEKS
+        start = end - self.TWO_WEEKS
         model.cryptopriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
-
-    
->>>>>>> pricetracker
