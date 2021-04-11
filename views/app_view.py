@@ -2,22 +2,27 @@ from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
 
-from PySide2.QtWidgets import QMainWindow, QVBoxLayout
-
-from controllers.app_controller import AppController
-from models.app_model import AppModel
-from views.base_view import BaseView
-from views.app_ui import Ui_App
+from PySide2.QtCore import QSettings
+from PySide2.QtWidgets import QAction, QMainWindow, QVBoxLayout
 
 if TYPE_CHECKING:
+    from PySide2.QtGui import QCloseEvent
+
     from controllers.base_controller import BaseController
     from models.base_model import BaseModel
 
-
+from controllers.app_controller import AppController
+from controllers.app_settings_controller import AppSettingsController
+from models.app_model import AppModel
+from models.app_settings_model import AppSettingsModel
+from views.app_ui import Ui_App
+from views.base_view import BaseView
+from views.app_settings import AppSettingsDialog
 from widgets.bar_chart_widget import BarChartWidget
 from widgets.demo_plot_widget import DemoPlotWidget
 from widgets.influencer_widget import InfluencerWidget
 from widgets.pie_chart_widget import PieChartWidget
+from widgets.crpyto_line_widget import LinePlotWidget
 from widgets.tweet_widget import TweetWidget
 from widgets.tweet_stream_widget import TweetStreamWidget
 
@@ -38,7 +43,13 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._tweetStream = TweetStreamWidget()
         self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
         self._pieChart = PieChartWidget((10, 10))
+        self._linePlot= LinePlotWidget({'prices': [[1618023871411, 58760.18558489944], [1618024218576, 59411.13328766664]]})
 
+        self._settingsDialogModel = AppSettingsModel()
+        self._settingsDialogController = AppSettingsController(self._settingsDialogModel)
+        self._settingsDialog = AppSettingsDialog(self._settingsDialogModel, self._settingsDialogController)
+
+        self._loadSettings()
         self._connectSignals()
         self._updateUI()
 
@@ -54,8 +65,23 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
     def pieChart(self) -> PieChartWidget:
         return self._pieChart
 
+    @property
+    def settingsDialog(self) -> AppSettingsDialog:
+        return self._settingsDialog
+
+    def _loadSettings(self) -> None:
+        settings: QSettings = cast(AppController, self.controller).settings
+        try:
+            self.resize(settings.value("window size"))
+            self.move(settings.value("window position"))
+        except:
+            pass
+
     def _connectSignals(self) -> None:
         self.tweetStream.ui.followInfluencerBtn.clicked.connect(self._onFollowInfluencerBtnClicked)
+        self.ui.actionSettings.triggered.connect(self._onSettingsBtnClicked)
+        self.ui.actionClose.triggered.connect(self.close)
+        cast(AppSettingsModel, self.settingsDialog.model).settingsChanged.connect(self._onSettingsSaved)
         model: AppModel = cast(AppModel, self.model)
         model.tweetHistoryChanged.connect(self._onTweetHistoryChanged)
         model.tweetAdded.connect(self._onNewTweetAdded)
@@ -76,10 +102,9 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         pieChartLayout.addWidget(self._pieChart)
         self.ui.rightTopChartFrame.setLayout(pieChartLayout)
 
-        plot = DemoPlotWidget()
-        demoChart = QVBoxLayout()
-        demoChart.addWidget(plot)
-        self.ui.bottomChartFrame.setLayout(demoChart)
+        linePlotLayout = QVBoxLayout()
+        linePlotLayout.addWidget(self._linePlot)
+        self.ui.bottomChartFrame.setLayout(linePlotLayout)
 
         self.tweetStream.ui.tweetStreamScrollAreaContents.setLayout(QVBoxLayout())
         self.tweetStream.ui.followingInfluencersScrollArea.setLayout(QVBoxLayout())
@@ -110,3 +135,28 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
 
     def _onInfluencerUnFollowed(self, twitterHandle: str) -> None:
         pass
+
+    def _onSettingsBtnClicked(self) -> None:
+        settings: QSettings = cast(AppController, self.controller).settings
+        self.settingsDialog.ui.apiKeyLineEdit.setText(settings.value("API_KEY", ''))
+        self.settingsDialog.ui.apiSecretLineEdit.setText(settings.value("API_SECRET", ''))
+        self.settingsDialog.ui.accessTokenLineEdit.setText(settings.value("ACCESS_TOKEN", ''))
+        self.settingsDialog.ui.accessTokenSecretLineEdit.setText(settings.value("ACCESS_TOKEN_SECRET", ''))
+        self.settingsDialog.ui.databaseNameLineEdit.setText(settings.value("DB_NAME", ''))
+        self.settingsDialog.ui.databasePathLineEdit.setText(settings.value("DB_PATH", ''))
+        self.settingsDialog.exec_()
+
+    def _onSettingsSaved(self, newSettings) -> None:
+        settings: QSettings = cast(AppController, self.controller).settings
+        for key, value in newSettings.items():
+            settings.setValue(key, value)
+
+        controller: AppController = cast(AppController, self.controller)
+        controller.restartStream()
+        controller.updateTweetHistory()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        self.settings.setValue("window size", self.size())
+        self.settings.setValue("window position", self.pos())
+        cast(AppController, self.controller).tearDown()
+        event.accept()

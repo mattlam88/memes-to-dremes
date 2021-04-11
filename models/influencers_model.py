@@ -1,12 +1,11 @@
+import os
 import sqlite3
-
-from settings import DB_PATH
 
 
 class InfluencersDAO:
-    def __init__(self):
+    def __init__(self, db_path, db_name):
         # will include various statements that will pull information from the database or insert in the database
-        self.conn = sqlite3.connect(DB_PATH)
+        self.conn = sqlite3.connect(os.path.join(db_path, db_name))
         self.cur = self.conn.cursor()
     
     def add_influencer(self, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
