@@ -9,9 +9,12 @@ class InfluencersDAO:
         self.cur = self.conn.cursor()
     
     def add_influencer(self, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
+        """
+        Adds influencer to the database by taking in the unique user id, name, twitter handle and whether or they are being followed
+        """
         self.cur.execute(
             """
-            INSERT INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
+            INSERT or IGNORE INTO influencers (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer) 
             VALUES (?, ?, ?, ?);
             """,
             (influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer)
@@ -19,6 +22,9 @@ class InfluencersDAO:
         self.conn.commit()
 
     def follow_influencer(self, influencer_twitter_acc):
+        """
+        Updates influencer in the database by taking chaning their current status to followed
+        """
         self.cur.execute(
             f"""
             UPDATE influencers SET following_influencer=1 WHERE influencer_twitter_acc='{influencer_twitter_acc}';
@@ -27,6 +33,9 @@ class InfluencersDAO:
         self.conn.commit()
 
     def unfollow_influencer(self, influencer_twitter_acc):
+        """
+        Updates influencer in the database by taking chaning their current status to unfollowed
+        """
         self.cur.execute(
             f"""
             UPDATE influencers SET following_influencer=0 WHERE influencer_twitter_acc='{influencer_twitter_acc}'
@@ -35,6 +44,9 @@ class InfluencersDAO:
         self.conn.commit()
 
     def get_influencer(self, influencer_name):
+        """
+        Retrieves a single influencer's data from the database
+        """
         influencer_data = self.cur.execute(
             f"""
             SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
@@ -46,6 +58,9 @@ class InfluencersDAO:
         return influencer_name_data
 
     def get_influencers(self):
+        """
+        Retrieves all influencers' data from the database
+        """
         influencers_data = self.cur.execute(
             f"""
             SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
@@ -57,6 +72,7 @@ class InfluencersDAO:
 
 
 class Influencers:
+    """Represents an Influencer which takes in an id, user id, name, twitter handle, and a following status"""
     def __init__(self, id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer):
         self._id = id
         self._influencer_user_id = influencer_user_id

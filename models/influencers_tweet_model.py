@@ -11,7 +11,7 @@ class InfluencersTweetDAO:
     def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
         self.cur.execute(
             """
-            INSERT INTO influencer_tweets (
+            INSERT or IGNORE INTO influencer_tweets (
                 influencer_twitter_acc,
                 tweet_ID, 
                 tweet_text, 
@@ -26,6 +26,7 @@ class InfluencersTweetDAO:
         self.conn.commit()
 
     def get_influencer_tweets(self, influencer_twitter_acc, crypto_ticker):
+        """Gets all the tweets of a single influencer from the database"""
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -40,6 +41,7 @@ class InfluencersTweetDAO:
         return all_influencer_tweets
 
     def get_all_influencer_tweets(self, influencer_twitter_acc):
+        """Gets all the tweets of all the influencers from the database"""
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -54,23 +56,26 @@ class InfluencersTweetDAO:
         return all_influencer_tweets
 
     def get_weekly_sentiment_score(self, start_date, end_date, twitter_handle):
+        """Runs a query to count up all the weekly sentiment score by date returns a list of sentiment score objects"""
         weekly_sentiment_count = []
-
+        
         weekly_data = self.cur.execute(
             f"""
-            SELECT sentiment_score, count(sentiment_score)
+            SELECT tweet_date_time, sentiment_score, count(sentiment_score)
             FROM influencer_tweets
             WHERE tweet_date_time BETWEEN {start_date} AND {end_date}
-            GROUP BY day(tweet_date_time), sentiment score
-            ORDER BY tweet_date_time
+            GROUP BY day(tweet_date_time), sentiment_score
+            ORDER BY tweet_date_time ASC, sentiment_score ASC;
             """
         )
 
         for data in weekly_data:
-            weekly_sentiment_count.append(data)
+            weekly_sentiment_score = InfluencerTweetSentimentScore(data[0], data[1], data[2])
+            weekly_sentiment_count.append(weekly_sentiment_score)
         return weekly_sentiment_count
 
     def get_daily_sentiment_score(self, current_date):
+        """Runs a query to count up sentiment scores of a single day and returns a list of sentiment score objects"""
         daily_sentiment_count = []
 
         daily_data = self.cur.execute(
@@ -79,11 +84,13 @@ class InfluencersTweetDAO:
             FROM influencer_tweets
             WHERE tweet_date_time='{current_date}'
             GROUP sentiment score
-            ORDER BY tweet_date_time
+            ORDER BY tweet_date_time ASC, sentiment_score ASC;
             """
         )
+
         for data in daily_data:
-            daily_sentiment_count.append(data)
+            daily_sentiment_score = InfluencerTweetSentimentScore(data[0], data[1], data[2])
+            daily_sentiment_count.append(daily_sentiment_score)
         return daily_sentiment_count
 
 
@@ -134,3 +141,9 @@ class InfluencersTweet:
             "cryptoTicker": self.crypto_ticker,
             "sentimentScore": self.sentiment_score
         }
+
+class InfluencerTweetSentimentScore:
+    def __init__(self, date, following_influencer, sentiment_score_total):
+        self._date = date
+        self._following_influencer = following_influencer
+        self._sentiment_score_total = sentiment_score_total
