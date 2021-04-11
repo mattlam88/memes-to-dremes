@@ -40,6 +40,39 @@ class InfluencersTweetDAO:
 
         return all_influencer_tweets
 
+    def get_weekly_sentiment_score(self, start_date, end_date, twitter_handle):
+        weekly_sentiment_count = []
+
+        weekly_data = self.cur.execute(
+            f"""
+            SELECT sentiment_score, count(sentiment_score)
+            FROM influencer_tweets
+            WHERE tweet_date_time BETWEEN {start_date} AND {end_date}
+            GROUP BY day(tweet_date_time), sentiment score
+            ORDER BY tweet_date_time
+            """
+        )
+
+        for data in weekly_data:
+            weekly_sentiment_count.append(data)
+        return weekly_sentiment_count
+
+    def get_daily_sentiment_score(self, current_date):
+        daily_sentiment_count = []
+
+        daily_data = self.cur.execute(
+            f"""
+            SELECT sentiment_score, count(sentiment_score)
+            FROM influencer_tweets
+            WHERE tweet_date_time='{current_date}'
+            GROUP sentiment score
+            ORDER BY tweet_date_time
+            """
+        )
+        for data in daily_data:
+            daily_sentiment_count.append(data)
+        return daily_sentiment_count
+
 
 class InfluencersTweet:
     def __init__(self, id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
