@@ -14,7 +14,9 @@ if TYPE_CHECKING:
     from models.base_model import BaseModel
 
 
+from views.barchart_view import BarChartView
 from views.plot_view import PlotView
+from views.piechart_view import PieChartView
 from views.influencer_widget import InfluencerWidget
 from views.tweet_widget import TweetWidget
 from views.tweet_stream_widget import TweetStreamWidget
@@ -39,6 +41,8 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._influencers = list()
         self._tweets = list()
         self._tweetStream = TweetStreamWidget()
+        self._barChart = BarChartView({"k1": [1, 2], "k2": [3, 4]})
+        self._pieChart = PieChartView((10, 10))
 
         self._updateUI()
 
@@ -54,6 +58,19 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         tweetStreamLayout = QVBoxLayout()
         tweetStreamLayout.addWidget(self._tweetStream)
         self.ui.tweetStreamFrame.setLayout(tweetStreamLayout)
+
+        barChartLayout = QVBoxLayout()
+        barChartLayout.addWidget(self._barChart)
+        self.ui.leftTopChartFrame.setLayout(barChartLayout)
+
+        pieChartLayout = QVBoxLayout()
+        pieChartLayout.addWidget(self._pieChart)
+        self.ui.rightTopChartFrame.setLayout(pieChartLayout)
+
+        plot = PlotView()
+        demoChart = QVBoxLayout()
+        demoChart.addWidget(plot)
+        self.ui.bottomChartFrame.setLayout(demoChart)
 
     """
     def _updateUI(self) -> None:
