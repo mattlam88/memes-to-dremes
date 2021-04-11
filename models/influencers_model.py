@@ -63,7 +63,7 @@ class InfluencersDAO:
         Retrieves all influencers' data from the database
         """
         influencers_data = self.cur.execute(
-            f"""
+            """
             SELECT id, influencer_user_id, influencer_name, influencer_twitter_acc, following_influencer
             FROM influencers;
             """
