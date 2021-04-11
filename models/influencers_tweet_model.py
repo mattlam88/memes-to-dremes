@@ -125,3 +125,13 @@ class InfluencersTweet:
     @property
     def sentiment_score(self):
         return self._sentiment_score
+
+    def to_dict(self):
+        return {
+            "screenName": self.influencer_twitter_acc,
+            "tweetID": self.tweet_ID,
+            "tweetText": self.tweet_text,
+            "createdAt": self.tweet_date_time,
+            "cryptoTicker": self.crypto_ticker,
+            "sentimentScore": self.sentiment_score
+        }
