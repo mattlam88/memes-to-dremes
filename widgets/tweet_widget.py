@@ -8,6 +8,7 @@ class TweetWidget(QWidget):
         super().__init__()
 
         self._ui: Ui_Tweet = Ui_Tweet()
+        self.ui.setupUi(self)
         self._connectSignals()
 
     def _connectSignals(self) -> None:

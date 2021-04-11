@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QWidget
 
-from widgets import Ui_Influencer
+from widgets.influencer_widget_ui import Ui_Influencer
 
 
 class InfluencerWidget(QWidget):
@@ -8,6 +8,7 @@ class InfluencerWidget(QWidget):
         super().__init__()
 
         self._ui: Ui_Influencer = Ui_Influencer()
+        self.ui.setupUi(self)
         self._connectSignals()
 
     def _connectSignals(self) -> None:
