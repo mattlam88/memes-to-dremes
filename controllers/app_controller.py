@@ -135,13 +135,13 @@ class AppController(BaseController):
 
     def _extractTicker(self, tweetStatus) -> str:
         txt = tweetStatus
-        bitcoin_finder = re.search('bitcoin'|'Bitcoin'|'BITCOIN'|'btc'|'BTC', txt)
+        bitcoin_finder = re.search('bitcoin|Bitcoin|BITCOIN|btc|BTC', txt)
 
-        if bitcoin_finder == None:
-            pass
-        else:
-            # if bitcoin is contained in the tweet it will return out the string "BTC"
-            return 'BTC'
+        if bitcoin_finder is None:
+            return str()
+
+        # if bitcoin is contained in the tweet it will return out the string "BTC"
+        return 'BTC'
 
     def updateTweetHistory(self, influencer_one, influencer_two, influencer_three, influencer_four, influencer_five, crypto_ticker) -> None:
         # get tweets from database
