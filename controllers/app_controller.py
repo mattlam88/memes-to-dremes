@@ -200,8 +200,10 @@ class AppController(BaseController):
         return keywords
 
     def _getInfluencerIds(self) -> List[str]:
-        influencers = ["1309965256286973955"]
-        return influencers
+        influencersDAO = InfluencersDAO()
+        influencers = influencersDAO.get_influencers()
+
+        return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
 
     def changeBtnText(self, value):
         cast(AppModel, self.model).btnText = value
