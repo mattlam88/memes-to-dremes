@@ -3,14 +3,8 @@ from matplotlib.figure import Figure
 from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayout
 import seaborn as sns
 
-from views.base_plot_view import BasePlotView
 
-
-class PlotViewMeta(type(QWidget), type(BasePlotView)):
-    pass
-
-
-class PlotView(QWidget):
+class DemoPlotWidget(QWidget):
     tips = sns.load_dataset("tips")
 
     def __init__(self):

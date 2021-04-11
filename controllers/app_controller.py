@@ -8,7 +8,7 @@ from .base_controller import BaseController
 from models.app_model import AppModel
 from models.influencers_tweet_model import InfluencersTweetDAO
 from models.influencers_model import InfluencersDAO
-from ShaunsWork.sentimentanalysis import SentimentAnalysis
+from utils.sentimentanalysis import SentimentAnalysis
 
 
 class AppController(BaseController):

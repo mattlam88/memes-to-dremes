@@ -5,7 +5,7 @@ import matplotlib
 import numpy as np
 
 
-class BarChartView(QWidget):
+class BarChartWidget(QWidget):
     def __init__(self, historical_data: dict):
         super().__init__()
         self._setupView()

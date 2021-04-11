@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QWidget
 
-from views.tweet_stream_widget_ui import Ui_TweetStream
+from widgets.tweet_stream_widget_ui import Ui_TweetStream
 
 
 class TweetStreamWidget(QWidget):

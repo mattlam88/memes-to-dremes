@@ -14,12 +14,10 @@ if TYPE_CHECKING:
     from models.base_model import BaseModel
 
 
-from views.barchart_view import BarChartView
-from views.plot_view import PlotView
-from views.piechart_view import PieChartView
-from views.influencer_widget import InfluencerWidget
-from views.tweet_widget import TweetWidget
-from views.tweet_stream_widget import TweetStreamWidget
+from widgets.bar_chart_widget import BarChartWidget
+from widgets.demo_plot_widget import DemoPlotWidget
+from widgets.pie_chart_widget import PieChartWidget
+from widgets.tweet_stream_widget import TweetStreamWidget
 
 
 class AppViewMeta(type(QMainWindow), type(BaseView)):
@@ -41,8 +39,8 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._influencers = list()
         self._tweets = list()
         self._tweetStream = TweetStreamWidget()
-        self._barChart = BarChartView({"k1": [1, 2], "k2": [3, 4]})
-        self._pieChart = PieChartView((10, 10))
+        self._barChart = BarChartWidget({"k1": [1, 2], "k2": [3, 4]})
+        self._pieChart = PieChartWidget((10, 10))
 
         self._updateUI()
 
@@ -67,7 +65,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         pieChartLayout.addWidget(self._pieChart)
         self.ui.rightTopChartFrame.setLayout(pieChartLayout)
 
-        plot = PlotView()
+        plot = DemoPlotWidget()
         demoChart = QVBoxLayout()
         demoChart.addWidget(plot)
         self.ui.bottomChartFrame.setLayout(demoChart)

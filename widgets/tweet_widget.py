@@ -1,18 +1,18 @@
 from PySide2.QtWidgets import QWidget
 
-from views.influencer_widget_ui import Ui_Influencer
+from widgets.tweet_widget_ui import Ui_Tweet
 
 
-class InfluencerWidget(QWidget):
+class TweetWidget(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
-        self._ui: Ui_Influencer = Ui_Influencer()
+        self._ui: Ui_Tweet = Ui_Tweet()
         self._connectSignals()
 
     def _connectSignals(self) -> None:
         pass
 
     @property
-    def ui(self) -> Ui_Influencer:
+    def ui(self) -> Ui_Tweet:
         return self._ui

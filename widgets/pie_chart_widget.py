@@ -3,7 +3,7 @@ from matplotlib.figure import Figure
 from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayout
 
 
-class PieChartView(QWidget):
+class PieChartWidget(QWidget):
     def __init__(self, aggregate_values: tuple):
         super().__init__()
         self._setupView()
