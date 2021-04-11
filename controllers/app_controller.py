@@ -105,10 +105,10 @@ class AppController(BaseController):
         createdAt: str = self._convertDate(tweetStatus['created_at'])
         
         # get crypto ticker from tweet
-        cryptoTicker: str = self._extractTicker(tweetStatus)
-        
-        if cryptoTicker is None:
-            cryptoTicker = ''
+        cryptoTicker: str = self._extractTicker(tweetText)
+
+        if cryptoTicker == '':
+            return
 
         tweetDAO = InfluencersTweetDAO()
         tweetDAO.add_influencer_tweet(
