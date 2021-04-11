@@ -83,7 +83,10 @@ class AppController(BaseController):
         for tweet in rawTweets:
             self.addTweet(tweet)
 
-        # Step 5: Restart streamer so it picks up new influencer to follow.
+        # Step 5: Update app model to include influencer
+        cast(AppModel, self.model).followInfluencer(twitterHandle)
+
+        # Step 6: Restart streamer so it picks up new influencer to follow.
         self.restartStream()
 
     # TODO: use class for api calls to retrieve user data.
@@ -118,8 +121,16 @@ class AppController(BaseController):
         # pass tweet to model
         # manually trigger signal here
         # TODO: find a way to update model with data so it works and triggers UI update.
+        tweet = {
+            "screenName": screenName,
+            "tweetID": tweetID,
+            "tweetText": tweetText,
+            "createdAt": createdAt,
+            "cryptoTicker": cryptoTicker,
+            "sentimentScore": sentimentScore
+        }
         model: AppModel = cast(AppModel, self.model)
-        model.btnText = str(sentimentScore)
+        model.addTweet(tweet)
 
     def _scoreTweet(self, tweetStatus: Dict[str, Any]) -> int:
         return self.sentimentAnalysis.get_tweet_sentiment(tweetStatus)
