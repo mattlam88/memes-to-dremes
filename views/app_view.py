@@ -18,6 +18,7 @@ from widgets.bar_chart_widget import BarChartWidget
 from widgets.demo_plot_widget import DemoPlotWidget
 from widgets.influencer_widget import InfluencerWidget
 from widgets.pie_chart_widget import PieChartWidget
+from widgets.crpyto_line_widget import LinePlotWidget
 from widgets.tweet_widget import TweetWidget
 from widgets.tweet_stream_widget import TweetStreamWidget
 
@@ -38,6 +39,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self._tweetStream = TweetStreamWidget()
         self._barChart = BarChartWidget({"2021-10-11": (33, 22), "2021-10-12": (31, 4),"2021-10-13": (33, 22), "2021-10-14": (31, 4), "2021-10-15": (33, 22), "2021-10-16": (31, 4)})
         self._pieChart = PieChartWidget((10, 10))
+        self._linePlot= LineChartWidget({'prices': [[1618023871411, 58760.18558489944], [1618024218576, 59411.13328766664]])
 
         self._connectSignals()
         self._updateUI()
@@ -76,10 +78,9 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         pieChartLayout.addWidget(self._pieChart)
         self.ui.rightTopChartFrame.setLayout(pieChartLayout)
 
-        plot = DemoPlotWidget()
-        demoChart = QVBoxLayout()
-        demoChart.addWidget(plot)
-        self.ui.bottomChartFrame.setLayout(demoChart)
+        linePlotLayout = QVBoxLayout()
+        linePlotLayout.addWidget(self._linePlot)
+        self.ui.bottomChartFrame.setLayout(linePlotLayout)
 
         self.tweetStream.ui.tweetStreamScrollAreaContents.setLayout(QVBoxLayout())
         self.tweetStream.ui.followingInfluencersScrollArea.setLayout(QVBoxLayout())
