@@ -4,10 +4,10 @@ from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayo
 
 
 class PieChartWidget(QWidget):
-    def __init__(self, aggregate_values: tuple):
+    def __init__(self):
         super().__init__()
         self._setupView()
-        self._updatePlot(aggregate_values)
+        self._createFigure()
 
     def _setupView(self):
         self._createFigure()
