@@ -3,19 +3,16 @@ from matplotlib.figure import Figure
 from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayout
 import seaborn as sns
 
-from views.base_plot_view import BasePlotView
 
-
-class PlotViewMeta(type(QWidget), type(BasePlotView)):
-    pass
-
-
-class PlotView(QWidget, BasePlotView, metaclass=PlotViewMeta):
+class DemoPlotWidget(QWidget):
     tips = sns.load_dataset("tips")
 
-    def __init__(self, model, controller):
-        QWidget.__init__(self)
-        BasePlotView.__init__(self, model, controller)
+    def __init__(self):
+        super().__init__()
+
+        self._setupView()
+        self._updatePlot()
+        self._connectSignals()
 
     def _setupView(self):
         self.dropdown1 = QComboBox()
