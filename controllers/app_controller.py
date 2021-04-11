@@ -217,6 +217,9 @@ class AppController(BaseController):
             if not person.following_influencer:
                 continue
 
+            # add influencer to following
+            cast(AppModel, self.model).followInfluencer(person.influencer_twitter_acc)
+
             # For each individual the person is followed and then pulls their tweet history in the database
             # influencersDAO.follow_influencer(person)
             _tweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
@@ -269,4 +272,4 @@ class AppController(BaseController):
         cryptocoin = CryptoCoin("bitcoin", "btc")
         end = time.time()*1000
         start = end - self.TWO_WEEKS
-        model.cryptopriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
+        model.cryptoPriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
