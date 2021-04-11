@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from typing import cast, Any, Dict, Optional, Tuple
 
@@ -42,6 +43,8 @@ class AppController(BaseController):
         self._settings: QSettings = QSettings("MemesToDremes", "App")
 
         self._configureApi()
+        self._twitterChannel: TwitterChannel = TwitterChannel(self.api)
+
     """
     WORKFLOWS:
 
@@ -90,7 +93,10 @@ class AppController(BaseController):
         self.api = tp.API(auth)
 
     def unFollowInfluencer(self, twitterHandle: str) -> None:
-        influencersDAO = InfluencersDAO()
+        if not self._dbExists():
+            return
+
+        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         influencersDAO.unfollow_influencer(twitterHandle)
         cast(AppModel, self.model).unFollowInfluencer(twitterHandle)
 
@@ -101,11 +107,14 @@ class AppController(BaseController):
         :param twitterHandle: The influencer's twitter handle.
         """
 
+        if not self._dbExists():
+            return
+
         # Step 1: Get influencer data from twitter.
         userID, name, account = self._getUserData(twitterHandle)
 
         # Step 2: Add influencer to database.
-        influencersDAO: InfluencersDAO = InfluencersDAO()
+        influencersDAO: InfluencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         influencersDAO.add_influencer(userID, name, account, True)
 
         # Step 3: Get historic tweets for influencer.
@@ -130,6 +139,9 @@ class AppController(BaseController):
         return self.twitterChannel.get_user_tweets(twitterHandle)
 
     def addTweet(self, tweetStatus) -> None:
+        if not self._dbExists():
+            return
+
         # run SentimentAnalysis, score the tweet, append to tweet data
         sentimentScore: int = self._scoreTweet(tweetStatus)
 
@@ -145,7 +157,7 @@ class AppController(BaseController):
         if cryptoTicker == '':
             return
 
-        tweetDAO = InfluencersTweetDAO()
+        tweetDAO = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         tweetDAO.add_influencer_tweet(
             screenName, tweetID, tweetText, createdAt, cryptoTicker, sentimentScore
         )
@@ -187,10 +199,13 @@ class AppController(BaseController):
         return 'BTC'
 
     def updateTweetHistory(self) -> None:
+        if not self._dbExists():
+            return
+
         # get tweets from database
         tweets = list()
-        influencersDAO = InfluencersDAO() # initiates DAO instance
-        influencers_tweets = InfluencersTweetDAO()
+        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", '')) # initiates DAO instance
+        influencers_tweets = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
 
         # get influencers from db
         influencers = influencersDAO.get_influencers()
@@ -213,8 +228,11 @@ class AppController(BaseController):
             cast(AppModel, self.model).addTweet(tweet)
 
     def startStream(self) -> None:
-        self.twitterStream.influencers = self._getInfluencerIds()
-        self.twitterStream.filter(track=self._getCryptoKeywords(), follow=self._getInfluencerIds(), is_async=True)
+        if not self._dbExists():
+            return
+
+        self.twitterStream.influencers = self.getInfluencerIds()
+        self.twitterStream.filter(track=self._getCryptoKeywords(), follow=self.getInfluencerIds(), is_async=True)
 
     def restartStream(self) -> None:
         self.twitterStream.disconnect()
@@ -225,11 +243,18 @@ class AppController(BaseController):
         keywords = ["bitcoin", "btc"]
         return keywords
 
-    def _getInfluencerIds(self) -> List[str]:
-        influencersDAO = InfluencersDAO()
+    def _dbExists(self) -> bool:
+        dbPath: str = self.settings.value("DB_PATH", '') + '\\' + self.settings.value("DB_NAME", '')
+        return os.path.isfile(dbPath)
+
+    def getInfluencerIds(self) -> List[str]:
+        if not self._dbExists():
+            return list()
+
+        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         influencers = influencersDAO.get_influencers()
 
         return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
 
-    def changeBtnText(self, value):
-        cast(AppModel, self.model).btnText = value
+    def tearDown(self) -> None:
+        self.twitterStream.disconnect()
