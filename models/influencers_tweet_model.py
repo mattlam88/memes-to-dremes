@@ -27,6 +27,7 @@ class InfluencersTweetDAO:
         self.conn.commit()
 
     def get_influencer_tweets(self, influencer_twitter_acc, crypto_ticker):
+        """Gets all the tweets of a single influencer from the database"""
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -41,6 +42,7 @@ class InfluencersTweetDAO:
         return all_influencer_tweets
 
     def get_all_influencer_tweets(self, influencer_twitter_acc):
+        """Gets all the tweets of all the influencers from the database"""
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -55,6 +57,7 @@ class InfluencersTweetDAO:
         return all_influencer_tweets
 
     def get_weekly_sentiment_score(self, start_date, end_date, twitter_handle):
+        """Runs a query to count up all the weekly sentiment score by date returns a list of sentiment score objects"""
         weekly_sentiment_count = []
         
         weekly_data = self.cur.execute(
@@ -73,6 +76,7 @@ class InfluencersTweetDAO:
         return weekly_sentiment_count
 
     def get_daily_sentiment_score(self, current_date):
+        """Runs a query to count up sentiment scores of a single day and returns a list of sentiment score objects"""
         daily_sentiment_count = []
 
         daily_data = self.cur.execute(
