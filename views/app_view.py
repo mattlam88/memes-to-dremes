@@ -84,9 +84,11 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self.tweetStream.ui.tweetStreamScrollAreaContents.setLayout(QVBoxLayout())
         self.tweetStream.ui.followingInfluencersScrollArea.setLayout(QVBoxLayout())
 
+        cast(AppController, self.controller).updateTweetHistory()
+
     def _onFollowInfluencerBtnClicked(self) -> None:
         twitterHandle: str = self.tweetStream.ui.lineEditTwitterHandle.text()
-        cast(AppController, self.controller).addInfluencer(twitterHandle)
+        cast(AppController, self.controller).followInfluencer(twitterHandle)
         self.tweetStream.ui.lineEditTwitterHandle.clear()
 
     def _onTweetHistoryChanged(self) -> None:
