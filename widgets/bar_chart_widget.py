@@ -2,6 +2,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayout
 import matplotlib
+import matplotlib.dates as mdates
 import numpy as np
 import math
 from datetime import datetime
@@ -34,7 +35,7 @@ class BarChartWidget(QWidget):
         self.canvas.updateGeometry()
 
     def _updatePlot(self, historical_data: dict):
-        labels = [datetime.strptime(key, '%Y-%m-%d').date() for key in historical_data.keys()] # dates for each data point in historical data
+        labels = [key[5:] for key in historical_data.keys()] # dates for each data point in historical data
         positive_totals = [value[0] for value in historical_data.values()] # get list of positive tweet totals for each day
         negative_totals = [value[1] for value in historical_data.values()] # get list of negative tweet totals for each day
 
@@ -54,7 +55,7 @@ class BarChartWidget(QWidget):
         self.ax1.spines['right'].set_visible(False)
         self.ax1.spines['left'].set_visible(False)
         self.ax1.spines['bottom'].set_color('#DDDDDD')
-        self.ax1.tick_params(bottom=False, left=False)
+        self.ax1.tick_params(left=False)
         self.ax1.set_axisbelow(True)
         self.ax1.yaxis.grid(True, color='#EEEEEE')
         self.ax1.xaxis.grid(False)
