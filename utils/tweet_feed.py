@@ -1,5 +1,4 @@
 import tweepy as tp
-import settings
 from datetime import *
 
 from typing import Tuple
