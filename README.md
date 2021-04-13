@@ -28,14 +28,38 @@ python database/seed.py
 python main.py
 ```
 
-#### Step 6: Visit the app's settings page. On Windows, this will be under File > Settings. On MacOS, you will find this under Preferences > Settings.
-#### Step 7: Create a new [Twitter developer account](https://developer.twitter.com/en/apply-for-access). You will need this to be able to generate tokens for the API.
+#### Step 6: Visit the app's settings page. 
+
+On Windows, this will be under File > Settings. 
+
+On MacOS, you will find this under Preferences > Settings.
+
+#### Step 7: Create a new [Twitter developer account](https://developer.twitter.com/en/apply-for-access). 
+
+You will need this to be able to generate tokens for the API.
+
 #### Step 8: Visit the [Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) dashboard.
-#### Step 9: Create a new project. Then under the project tab, click the key icon beside your project name.
-#### Step 10: Regenerate your API Key and Secret. Copy the values to the app's settings fields.
-#### Step 11: Regenerate your Access Token and Secret. Copy the values to the app's settings fields.
-#### Step 12: Add the database name. By default, this should be `memesToDremes.db`.
-#### Step 13: Add the database path. This should be the full path to the project's root directory.
+
+#### Step 9: Create a new project. 
+
+Then under the project tab, click the key icon beside your project name.
+
+#### Step 10: Regenerate your API Key and Secret. 
+
+Copy the values to the app's settings fields.
+
+#### Step 11: Regenerate your Access Token and Secret. 
+
+Copy the values to the app's settings fields.
+
+#### Step 12: Add the database name. 
+
+By default, this should be `memesToDremes.db`.
+
+#### Step 13: Add the database path. 
+
+This should be the full path to the project's root directory.
+
 #### Step 14: Save settings and close to return to the app. 
 
 You're done! You can now start using the app to make API calls. 
