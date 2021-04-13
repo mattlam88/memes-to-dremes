@@ -30,7 +30,7 @@ class StreamListener(tp.StreamListener):
         """
         if status.user.id_str not in self.influencers:
             return
-        print(status.text)
+        
         # TODO: Figure out how we want to return this information for integration into db
 
         self.controller.addTweet(status._json)
@@ -72,12 +72,8 @@ class TwitterChannel:
 
             if status.created_at > start_date:
                 if status.in_reply_to_status_id is None:
-                    print("date time is:", status.created_at)
-                    print("tweet is: ", status.text)
                     tweets.append(status._json)
                 elif status.in_reply_to_screen_name == username and status.user.screen_name == username:
-                    print("date time is:", status.created_at)
-                    print("tweet is: ", status.text)
                     tweets.append(status._json)
             else:
                 break
