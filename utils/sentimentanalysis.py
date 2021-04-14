@@ -29,8 +29,7 @@ class SentimentAnalysis:
         using textblob's sentiment method
         """
         # create TextBlob object of passed tweet text
-        tweetTxt = json.dumps(tweet)
-        analysis = TextBlob(self.clean_tweet(tweetTxt))
+        analysis = TextBlob(self.clean_tweet(tweet.get("text", '')))
         # set sentiment
         if analysis.sentiment.polarity > 0:
             return 1

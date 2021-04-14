@@ -18,7 +18,6 @@ class LinePlotWidget(QWidget):
     def __init__(self):
         super().__init__()
         self._setupView()
-        self._createFigure()
 
     def _setupView(self):
         self._createFigure()
