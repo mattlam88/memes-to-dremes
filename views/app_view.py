@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import cast, TYPE_CHECKING
 
 from PySide2.QtCore import QSettings, QPoint, QSize
@@ -94,15 +95,15 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
     def _updateUI(self) -> None:
         # add widgets to ui
         tweetStreamLayout = QVBoxLayout()
-        tweetStreamLayout.addWidget(self._tweetStream)
+        tweetStreamLayout.addWidget(self.tweetStream)
         self.ui.tweetStreamFrame.setLayout(tweetStreamLayout)
 
         barChartLayout = QVBoxLayout()
-        barChartLayout.addWidget(self._barChart)
+        barChartLayout.addWidget(self.barChart)
         self.ui.leftTopChartFrame.setLayout(barChartLayout)
 
         pieChartLayout = QVBoxLayout()
-        pieChartLayout.addWidget(self._pieChart)
+        pieChartLayout.addWidget(self.pieChart)
         self.ui.rightTopChartFrame.setLayout(pieChartLayout)
 
         linePlotLayout = QVBoxLayout()
@@ -120,10 +121,32 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self.tweetStream.ui.lineEditTwitterHandle.clear()
 
     def _onTweetHistoryChanged(self) -> None:
-        # update graphs and tweet stream display
-        pass
+        cast(AppController, self.controller).computeAggregateScore(datetime.today())
+        tweets = cast(AppModel, self.model).tweetHistory
+
+        oneWeekDateRange = [datetime.today() - timedelta(days=x) for x in range(7)]
+        oneWeekDateRange.reverse()
+
+        oneWeekScores = dict()
+
+        for date in oneWeekDateRange:
+            cast(AppController, self.controller).computeAggregateScore(date)
+            score = cast(AppModel, self.model).aggregateScore
+            formattedDate = f"{date.year}-{str(date.month).zfill(2)}-{str(date.day).zfill(2)}"
+            oneWeekScores[formattedDate] = score
+
+        self.barChart._updatePlot(oneWeekScores)
+
+        for tweet in tweets:
+            tweetWidget = TweetWidget()
+            tweetWidget.ui.tweet.setText(tweet.get("tweetText"))
+            tweetWidget.ui.twitterHandle.setText("@" + tweet.get("screenName"))
+            tweetWidget.ui.cryptoTicker.setText(tweet.get("cryptoTicker"))
+
+            self.tweetStream.ui.tweetStreamScrollAreaContents.layout().addWidget(tweetWidget)
 
     def _onNewTweetAdded(self, tweet) -> None:
+        cast(AppController, self.controller).computeAggregateScore(datetime.today())
         tweetWidget = TweetWidget()
         tweetWidget.ui.tweet.setText(tweet.get("tweetText"))
         tweetWidget.ui.twitterHandle.setText("@" + tweet.get("screenName"))
@@ -137,7 +160,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self.tweetStream.ui.influencers.layout().addWidget(influencerWidget)
 
     def _onCryptoPriceUpdated(self, historic_data):
-        self._linePlot.updatePlot(historic_data)
+        self._linePlot._updatePlot(historic_data)
 
     def _onInfluencerUnFollowed(self, twitterHandle: str) -> None:
         pass

@@ -230,8 +230,9 @@ class AppController(BaseController):
                 tweets.append(influencerTweet.to_dict())
 
         # pass tweets to model
-        for tweet in tweets:
-            cast(AppModel, self.model).addTweet(tweet)
+        cast(AppModel, self.model).tweetHistory = tweets
+        # for tweet in tweets:
+        #     cast(AppModel, self.model).addTweet(tweet)
 
     def startStream(self) -> None:
         if not self._dbExists():
@@ -262,11 +263,9 @@ class AppController(BaseController):
 
         return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
 
-    def computeAggregateScore(self) -> None:
+    def computeAggregateScore(self, date: datetime) -> None:
         tweetDAO = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
-        today: datetime = datetime.today()
-        formattedDate: str = f"{today.year}-{str(today.month).zfill(2)}-{str(today.day).zfill(2)} 00:00:00"
-        scores: Dict[int, int] = tweetDAO.get_daily_sentiment_score(formattedDate)
+        scores: Dict[int, int] = tweetDAO.get_daily_sentiment_score({"year": str(date.year), "month": str(date.month).zfill(2), "day": str(date.day).zfill(2)})
 
         model: AppModel = cast(AppModel, self.model)
         model.aggregateScore = scores.get(1, 0), scores.get(0, 0)
@@ -283,3 +282,4 @@ class AppController(BaseController):
         end = time.time()*1000
         start = end - self.TWO_WEEKS
         model.cryptoPriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
+        print(model.cryptoPriceHistory)

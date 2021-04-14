@@ -82,7 +82,9 @@ class InfluencersTweetDAO:
             f"""
             SELECT sentiment_score, count(sentiment_score)
             FROM influencer_tweets
-            WHERE tweet_date_time>='{current_date}'
+            WHERE STRFTIME('%Y', tweet_date_time) = '{current_date["year"]}'
+              AND STRFTIME('%m', tweet_date_time) = '{current_date["month"]}'
+              AND STRFTIME('%d', tweet_date_time) = '{current_date["day"]}'
             GROUP BY sentiment_score
             ORDER BY tweet_date_time ASC, sentiment_score ASC;
             """
@@ -90,8 +92,7 @@ class InfluencersTweetDAO:
 
         for data in daily_data:
             daily_sentiment_count[data[0]] = data[1]
-            #daily_sentiment_score = InfluencerTweetSentimentScore(data[0], data[1], data[2])
-            #daily_sentiment_count.append(daily_sentiment_score)
+
         return daily_sentiment_count
 
 
