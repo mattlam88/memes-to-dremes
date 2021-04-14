@@ -76,21 +76,22 @@ class InfluencersTweetDAO:
 
     def get_daily_sentiment_score(self, current_date):
         """Runs a query to count up sentiment scores of a single day and returns a list of sentiment score objects"""
-        daily_sentiment_count = []
+        daily_sentiment_count = {}
 
         daily_data = self.cur.execute(
             f"""
             SELECT sentiment_score, count(sentiment_score)
             FROM influencer_tweets
-            WHERE tweet_date_time='{current_date}'
-            GROUP sentiment score
+            WHERE tweet_date_time>='{current_date}'
+            GROUP BY sentiment_score
             ORDER BY tweet_date_time ASC, sentiment_score ASC;
             """
         )
 
         for data in daily_data:
-            daily_sentiment_score = InfluencerTweetSentimentScore(data[0], data[1], data[2])
-            daily_sentiment_count.append(daily_sentiment_score)
+            daily_sentiment_count[data[0]] = data[1]
+            #daily_sentiment_score = InfluencerTweetSentimentScore(data[0], data[1], data[2])
+            #daily_sentiment_count.append(daily_sentiment_score)
         return daily_sentiment_count
 
 
