@@ -6,7 +6,7 @@ import re
 import time
 from typing import cast, Any, Dict, Optional, Tuple
 
-from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSettings, QThread, QObject
 import tweepy as tp
 from tweepy import API, Stream
 
@@ -15,7 +15,7 @@ from models.app_model import AppModel
 from models.influencers_tweet_model import InfluencersTweetDAO
 from models.influencers_model import InfluencersDAO
 
-from utils.crypto_coin import CryptoCoin
+from utils.crypto_coin import CoinGeckoWorker
 from utils.sentimentanalysis import SentimentAnalysis
 from utils.tweet_feed import TwitterChannel
 
@@ -35,7 +35,6 @@ class AppController(BaseController):
         'Nov': '11',
         'Dec': '12'
     }
-    TWO_WEEKS = 1209600000 # two weeks of time in milliseconds
 
     def __init__(self, model) -> None:
         super().__init__(model)
@@ -231,8 +230,6 @@ class AppController(BaseController):
 
         # pass tweets to model
         cast(AppModel, self.model).tweetHistory = tweets
-        # for tweet in tweets:
-        #     cast(AppModel, self.model).addTweet(tweet)
 
     def startStream(self) -> None:
         if not self._dbExists():
@@ -274,12 +271,13 @@ class AppController(BaseController):
         self.twitterStream.disconnect()
 
     def updatePrice(self) -> None:
-        '''
+        """
         Calls crypto coin API at regular interval and updates model
-        '''
-        model: AppModel = cast(AppModel, self.model)
-        cryptocoin = CryptoCoin("bitcoin", "btc")
-        end = time.time()*1000
-        start = end - self.TWO_WEEKS
-        model.cryptoPriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)
-        print(model.cryptoPriceHistory)
+        """
+
+        self.thread = QThread()
+        self.worker = CoinGeckoWorker(self.model)
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()

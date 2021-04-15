@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import cast, TYPE_CHECKING
 
 from PySide2.QtCore import QSettings, QPoint, QSize
-from PySide2.QtWidgets import QAction, QMainWindow, QVBoxLayout
+from PySide2.QtWidgets import QMainWindow, QVBoxLayout
 
 if TYPE_CHECKING:
     from PySide2.QtGui import QCloseEvent
@@ -20,7 +20,6 @@ from views.app_ui import Ui_App
 from views.base_view import BaseView
 from views.app_settings import AppSettingsDialog
 from widgets.bar_chart_widget import BarChartWidget
-from widgets.demo_plot_widget import DemoPlotWidget
 from widgets.influencer_widget import InfluencerWidget
 from widgets.pie_chart_widget import PieChartWidget
 from widgets.crpyto_line_widget import LinePlotWidget
@@ -114,6 +113,7 @@ class AppView(QMainWindow, BaseView, metaclass=AppViewMeta):
         self.tweetStream.ui.influencers.setLayout(QVBoxLayout())
 
         cast(AppController, self.controller).updateTweetHistory()
+        cast(AppController, self.controller).updatePrice()
 
     def _onFollowInfluencerBtnClicked(self) -> None:
         twitterHandle: str = self.tweetStream.ui.lineEditTwitterHandle.text()
