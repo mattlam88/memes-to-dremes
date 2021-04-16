@@ -10,13 +10,13 @@ class AppSettingsModelMeta(type(QObject), type(BaseModel)):
 
 
 class AppSettingsModel(QObject, BaseModel, metaclass=AppSettingsModelMeta):
+    # region Signals
+
     settingsChanged: Signal = Signal(dict)
 
-    def __init__(self) -> None:
-        QObject.__init__(self)
-        BaseModel.__init__(self)
+    # endregion
 
-        self._settings: Dict[str, str] = dict()
+    # region Properties
 
     @property
     def settings(self) -> Dict[str, str]:
@@ -26,3 +26,15 @@ class AppSettingsModel(QObject, BaseModel, metaclass=AppSettingsModelMeta):
     def settings(self, value: Dict[str, str]) -> None:
         self._settings = value
         self.settingsChanged.emit(value)
+
+    # endregion
+
+    # region Constructor
+
+    def __init__(self) -> None:
+        QObject.__init__(self)
+        BaseModel.__init__(self)
+
+        self._settings: Dict[str, str] = dict()
+
+    # endregion

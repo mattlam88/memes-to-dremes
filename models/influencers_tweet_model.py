@@ -3,12 +3,17 @@ import sqlite3
 
 
 class InfluencersTweetDAO:
+    # region Constructor
+
     def __init__(self, db_path, db_name):
         # will include various statements that will pull information from the database or insert in the database
         self.conn = sqlite3.connect(os.path.join(db_path, db_name)) # give the exact location of the database file
         self.cur = self.conn.cursor()
+
+    # endregion
     
-    def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
+    def add_influencer_tweet(self, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker,
+                             sentiment_score):
         self.cur.execute(
             """
             INSERT or IGNORE INTO influencer_tweets (
@@ -27,6 +32,7 @@ class InfluencersTweetDAO:
 
     def get_influencer_tweets(self, influencer_twitter_acc, crypto_ticker):
         """Gets all the tweets of a single influencer from the database"""
+
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -42,6 +48,7 @@ class InfluencersTweetDAO:
 
     def get_all_influencer_tweets(self, influencer_twitter_acc):
         """Gets all the tweets of all the influencers from the database"""
+
         all_influencer_tweets = []
         tweet_data = self.cur.execute(
             f"""
@@ -57,6 +64,7 @@ class InfluencersTweetDAO:
 
     def get_weekly_sentiment_score(self, start_date, end_date, twitter_handle):
         """Runs a query to count up all the weekly sentiment score by date returns a list of sentiment score objects"""
+
         weekly_sentiment_count = []
         
         weekly_data = self.cur.execute(
@@ -76,6 +84,7 @@ class InfluencersTweetDAO:
 
     def get_daily_sentiment_score(self, current_date):
         """Runs a query to count up sentiment scores of a single day and returns a list of sentiment score objects"""
+
         daily_sentiment_count = {}
 
         daily_data = self.cur.execute(
@@ -97,14 +106,7 @@ class InfluencersTweetDAO:
 
 
 class InfluencersTweet:
-    def __init__(self, id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker, sentiment_score):
-        self._id = id
-        self._influencer_twitter_acc = influencer_twitter_acc
-        self._tweet_ID = tweet_ID
-        self._tweet_text = tweet_text
-        self._tweet_date_time = tweet_date_time
-        self._crypto_ticker = crypto_ticker
-        self._sentiment_score = sentiment_score
+    # region Properties
 
     @property
     def id(self):
@@ -113,7 +115,7 @@ class InfluencersTweet:
     @property
     def influencer_twitter_acc(self):
         return self._influencer_twitter_acc
-    
+
     @property
     def tweet_ID(self):
         return self._tweet_ID
@@ -121,11 +123,11 @@ class InfluencersTweet:
     @property
     def tweet_text(self):
         return self._tweet_text
-    
+
     @property
     def tweet_date_time(self):
         return self._tweet_date_time
-    
+
     @property
     def crypto_ticker(self):
         return self._crypto_ticker
@@ -133,6 +135,22 @@ class InfluencersTweet:
     @property
     def sentiment_score(self):
         return self._sentiment_score
+
+    # endregion
+
+    # region Constructor
+
+    def __init__(self, id, influencer_twitter_acc, tweet_ID, tweet_text, tweet_date_time, crypto_ticker,
+                 sentiment_score):
+        self._id = id
+        self._influencer_twitter_acc = influencer_twitter_acc
+        self._tweet_ID = tweet_ID
+        self._tweet_text = tweet_text
+        self._tweet_date_time = tweet_date_time
+        self._crypto_ticker = crypto_ticker
+        self._sentiment_score = sentiment_score
+
+    # endregion
 
     def to_dict(self):
         return {
@@ -144,8 +162,13 @@ class InfluencersTweet:
             "sentimentScore": self.sentiment_score
         }
 
+
 class InfluencerTweetSentimentScore:
+    # region Constructor
+
     def __init__(self, date, following_influencer, sentiment_score_total):
         self._date = date
         self._following_influencer = following_influencer
         self._sentiment_score_total = sentiment_score_total
+
+    # endregion

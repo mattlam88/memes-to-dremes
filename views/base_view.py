@@ -11,6 +11,24 @@ if TYPE_CHECKING:
 class BaseView(metaclass=abc.ABCMeta):
     """App view base class."""
 
+    # region Properties
+
+    @property
+    def model(self) -> Type[BaseModel]:
+        return self._model
+
+    @property
+    def controller(self) -> Type[BaseController]:
+        return self._controller
+
+    @property
+    def ui(self) -> Optional[Any]:
+        return self._ui
+
+    # endregion
+
+    # region Constructor
+
     @classmethod
     def __subclasshook__(cls, subclass) -> bool:
         return (hasattr(subclass, "_connectSignals") and callable(subclass._connectSignals) or
@@ -26,17 +44,7 @@ class BaseView(metaclass=abc.ABCMeta):
         if self.ui is not None:
             self.ui.setupUi(self)
 
-    @property
-    def model(self) -> Type[BaseModel]:
-        return self._model
-
-    @property
-    def controller(self) -> Type[BaseController]:
-        return self._controller
-
-    @property
-    def ui(self) -> Optional[Any]:
-        return self._ui
+    # endregion
 
     @abc.abstractmethod
     def _connectSignals(self) -> None:
