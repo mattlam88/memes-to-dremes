@@ -1,21 +1,14 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PySide2.QtWidgets import QWidget, QSizePolicy, QComboBox, QLabel, QGridLayout
-import matplotlib
-import matplotlib.dates as mdates
 import numpy as np
-import math
-from datetime import datetime
+from typing import Dict, Tuple
 
-''' 
-    For bar chart, expected format of historial data is dictionary with dates as keys and values as
-    tuple of # pos tweets, # neg tweets for that day.
-    Example:
-    historical_data =  {'2021-12-30': (55, 25), '2021-12-31': (32, 11)}
-'''
+from PySide2.QtWidgets import QWidget, QSizePolicy, QGridLayout
 
 
 class BarChartWidget(QWidget):
+    # region Constructor
+
     def __init__(self):
         super().__init__()
         self._setupView()
@@ -29,19 +22,33 @@ class BarChartWidget(QWidget):
         self.fig = Figure()
         self.ax1 = self.fig.add_subplot(111)
         self.canvas = FigureCanvas(self.fig)
-        self.canvas.setSizePolicy(QSizePolicy.Expanding,
-                                  QSizePolicy.Expanding)
+        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.canvas.updateGeometry()
 
-    def _updatePlot(self, historical_data: dict):
-        labels = [key[5:] for key in historical_data.keys()] # dates for each data point in historical data
-        positive_totals = [value[0] for value in historical_data.values()] # get list of positive tweet totals for each day
-        negative_totals = [value[1] for value in historical_data.values()] # get list of negative tweet totals for each day
+    # endregion
+
+    def updatePlot(self, historical_data: Dict[str, Tuple[int, int]]) -> None:
+        """
+        Input format:
+        date: (num positive tweets, num negative tweets)
+
+        Example:
+        historical_data =  {'2021-12-30': (55, 25), '2021-12-31': (32, 11)}
+        """
+
+        # dates for each data point in historical data
+        labels = [key[5:] for key in historical_data.keys()]
+
+        # get list of positive tweet totals for each day
+        positive_totals = [value[0] for value in historical_data.values()]
+
+        # get list of negative tweet totals for each day
+        negative_totals = [value[1] for value in historical_data.values()]
 
         x = np.arange(len(historical_data))  # the label locations
         width = 0.35  # the width of the bars
-        rects1 = self.ax1.bar(x - width/2, positive_totals, width, color = 'green', label='Positive')
-        rects2 = self.ax1.bar(x + width/2, negative_totals, width, color = 'red', label='Negative')
+        rects1 = self.ax1.bar(x - width/2, positive_totals, width, color='green', label='Positive')
+        rects2 = self.ax1.bar(x + width/2, negative_totals, width, color='red', label='Negative')
 
         # Add some text for labels, title and custom x-axis tick labels, etc.
         max_daily_value = round(1.1* max([max(positive_totals), max(negative_totals)]), 0)
@@ -62,13 +69,14 @@ class BarChartWidget(QWidget):
 
         def autolabel(rects):
             """Attach a text label above each bar in *rects*, displaying its height."""
+
             for rect in rects:
                 height = rect.get_height()
                 self.ax1.annotate('{}'.format(height),
-                            xy=(rect.get_x() + rect.get_width() / 2, height),
-                            xytext=(0, 1),  # 1 points vertical offset
-                            textcoords="offset points",
-                            ha='center', va='bottom')
+                                  xy=(rect.get_x() + rect.get_width() / 2, height),
+                                  xytext=(0, 1),  # 1 points vertical offset
+                                  textcoords="offset points",
+                                  ha='center', va='bottom')
 
         # add totals above each bar
         autolabel(rects1)

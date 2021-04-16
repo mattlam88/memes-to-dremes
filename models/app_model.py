@@ -10,6 +10,8 @@ class AppModelMeta(type(QObject), type(BaseModel)):
 
 
 class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
+    # region Signals
+
     btnTextChanged: Signal = Signal(str)
     tweetHistoryChanged: Signal = Signal(list)
     tweetAdded: Signal = Signal(dict)
@@ -18,14 +20,9 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     cryptoPriceUpdated: Signal = Signal(dict)
     aggregateScoreUpdated: Signal = Signal(tuple)
 
-    def __init__(self) -> None:
-        QObject.__init__(self)
-        BaseModel.__init__(self)
+    # endregion
 
-        self._tweetHistory: List[Dict[str, str]] = list()
-        self._followingInfluencers: List[str] = list()
-        self._cryptoPriceHistory: Dict[str, float] = dict()
-        self._aggregateScore: Tuple[int, int] = (0, 0)
+    # region Properties
 
     @property
     def tweetHistory(self) -> List[Dict[str, str]]:
@@ -35,11 +32,11 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     def tweetHistory(self, value) -> None:
         self._tweetHistory = value
         self.tweetHistoryChanged.emit(value)
-    
+
     @property
     def cryptoPriceHistory(self) -> Dict[str, float]:
         return self._cryptoPriceHistory
-    
+
     @cryptoPriceHistory.setter
     def cryptoPriceHistory(self, value: Dict[str, float]) -> None:
         self._cryptoPriceHistory: Dict[str, float] = value
@@ -57,6 +54,21 @@ class AppModel(QObject, BaseModel, metaclass=AppModelMeta):
     def aggregateScore(self, value: Tuple[int, int]) -> None:
         self._aggregateScore = value
         self.aggregateScoreUpdated.emit(value)
+
+    # endregion
+
+    # region Constructor
+
+    def __init__(self) -> None:
+        QObject.__init__(self)
+        BaseModel.__init__(self)
+
+        self._tweetHistory: List[Dict[str, str]] = list()
+        self._followingInfluencers: List[str] = list()
+        self._cryptoPriceHistory: Dict[str, float] = dict()
+        self._aggregateScore: Tuple[int, int] = (0, 0)
+
+    # endregion
 
     def addTweet(self, tweet) -> None:
         self.tweetHistory.append(tweet)
