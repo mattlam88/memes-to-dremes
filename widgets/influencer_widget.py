@@ -4,6 +4,16 @@ from widgets.influencer_widget_ui import Ui_Influencer
 
 
 class InfluencerWidget(QWidget):
+    # region Properties
+
+    @property
+    def ui(self) -> Ui_Influencer:
+        return self._ui
+
+    # endregion
+
+    # region Constructor
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -14,6 +24,4 @@ class InfluencerWidget(QWidget):
     def _connectSignals(self) -> None:
         pass
 
-    @property
-    def ui(self) -> Ui_Influencer:
-        return self._ui
+    # endregion

@@ -1,7 +1,7 @@
 from typing import cast, Dict
 
 from .base_controller import BaseController
-from models.app_settings_model import AppSettingsModel
+from models import AppSettingsModel
 
 
 class AppSettingsController(BaseController):

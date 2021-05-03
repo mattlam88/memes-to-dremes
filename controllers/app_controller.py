@@ -1,61 +1,22 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from functools import wraps
 import os
 import re
-import time
 from typing import cast, Any, Dict, Optional, Tuple
 
-from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSettings, QThread
 import tweepy as tp
 from tweepy import API, Stream
 
 from .base_controller import BaseController
-from models.app_model import AppModel
-from models.influencers_tweet_model import InfluencersTweetDAO
-from models.influencers_model import InfluencersDAO
-
-from utils.crypto_coin import CryptoCoin
-from utils.sentimentanalysis import SentimentAnalysis
-from utils.tweet_feed import TwitterChannel
+from models import AppModel, InfluencersDAO, InfluencersTweetDAO
+from utils import CoinGeckoWorker, Converter, SentimentAnalysis, TwitterChannel
 
 
 class AppController(BaseController):
-    MONTH_MAP = {
-        'Jan': '01',
-        'Feb': '02',
-        'Mar': '03',
-        'Apr': '04',
-        'May': '05',
-        'Jun': '06',
-        'Jul': '07',
-        'Aug': '08',
-        'Sep': '09',
-        'Oct': '10',
-        'Nov': '11',
-        'Dec': '12'
-    }
-    TWO_WEEKS = 1209600000 # two weeks of time in milliseconds
-
-    def __init__(self, model) -> None:
-        super().__init__(model)
-
-        self._api = None
-        self._sentimentAnalysis = SentimentAnalysis()
-        self._twitterStream: Stream = Optional[Stream]
-        self._settings: QSettings = QSettings("MemesToDremes", "App")
-
-        self._configureApi()
-        self._twitterChannel: TwitterChannel = TwitterChannel(self.api)
-
-    """
-    WORKFLOWS:
-
-    1. User adds new influencer to follow.
-    2. User removes influencer from following.
-    3. Influencer makes a tweet.
-    4. User reopens app after closing it.
-    """
+    # region Properties
 
     @property
     def api(self) -> API:
@@ -85,6 +46,21 @@ class AppController(BaseController):
     def settings(self) -> QSettings:
         return self._settings
 
+    # endregion
+
+    # region Constructor
+
+    def __init__(self, model) -> None:
+        super().__init__(model)
+
+        self._api = None
+        self._sentimentAnalysis = SentimentAnalysis()
+        self._twitterStream: Stream = Optional[Stream]
+        self._settings: QSettings = QSettings("MemesToDremes", "App")
+
+        self._configureApi()
+        self._twitterChannel: TwitterChannel = TwitterChannel(self.api)
+
     def _configureApi(self) -> None:
         API_KEY: str = self.settings.value("API_KEY", '')
         API_SECRET: str = self.settings.value("API_SECRET", '')
@@ -95,14 +71,18 @@ class AppController(BaseController):
         auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
         self.api = tp.API(auth)
 
-    def unFollowInfluencer(self, twitterHandle: str) -> None:
-        if not self._dbExists():
-            return
+    # endregion
 
-        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
-        influencersDAO.unfollow_influencer(twitterHandle)
-        cast(AppModel, self.model).unFollowInfluencer(twitterHandle)
+    def _dbContext(func):
+        """Checks if database exists before calling wrapped method."""
 
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if self._dbExists():
+                return func(self, *args, **kwargs)
+        return wrapper
+
+    @_dbContext
     def followInfluencer(self, twitterHandle: str) -> None:
         """
         Adds a new influencer to the local database, pulls their tweets, updates sentiment scores, and updates UI.
@@ -110,14 +90,13 @@ class AppController(BaseController):
         :param twitterHandle: The influencer's twitter handle.
         """
 
-        if not self._dbExists():
-            return
-
         # Step 1: Get influencer data from twitter.
         userID, name, account = self._getUserData(twitterHandle)
 
         # Step 2: Add influencer to database.
-        influencersDAO: InfluencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
+        influencersDAO: InfluencersDAO = InfluencersDAO(
+            self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", '')
+        )
         influencersDAO.add_influencer(userID, name, account, True)
 
         # Step 3: Get historic tweets for influencer.
@@ -133,18 +112,27 @@ class AppController(BaseController):
         # Step 6: Restart streamer so it picks up new influencer to follow.
         self.restartStream()
 
-    # TODO: use class for api calls to retrieve user data.
+    @_dbContext
+    def unFollowInfluencer(self, twitterHandle: str) -> None:
+        """
+        Given an influencer's twitter handle, signals app to stop requesting tweets from influencer, and updates UI to
+        remove the influencer's tweets and data.
+
+        :param twitterHandle: The influencer's twitter handle.
+        """
+
+        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
+        influencersDAO.unfollow_influencer(twitterHandle)
+        cast(AppModel, self.model).unFollowInfluencer(twitterHandle)
+
     def _getUserData(self, twitterHandle: str) -> Tuple[str, str, str]:
         return self.twitterChannel.get_user_info(twitterHandle)
 
-    # TODO: use class for api calls to retrieve user tweet history.
     def _getUserTweets(self, twitterHandle: str) -> List[Dict[str, Any]]:
-        return self.twitterChannel.get_user_tweets(twitterHandle)
+        return self.twitterChannel.get_user_tweets(twitterHandle, datetime.today() - timedelta(days=7))
 
+    @_dbContext
     def addTweet(self, tweetStatus) -> None:
-        if not self._dbExists():
-            return
-
         # run SentimentAnalysis, score the tweet, append to tweet data
         sentimentScore: int = self._scoreTweet(tweetStatus)
 
@@ -152,7 +140,7 @@ class AppController(BaseController):
         screenName: str = tweetStatus['user']['screen_name']
         tweetID: str = tweetStatus['id']
         tweetText: str = tweetStatus['text']
-        createdAt: str = self._convertDate(tweetStatus['created_at'])
+        createdAt: str = Converter.convertDate(tweetStatus['created_at'])
 
         # get crypto ticker from tweet
         cryptoTicker: str = self._extractTicker(tweetText)
@@ -165,9 +153,6 @@ class AppController(BaseController):
             screenName, tweetID, tweetText, createdAt, cryptoTicker, sentimentScore
         )
 
-        # pass tweet to model
-        # manually trigger signal here
-        # TODO: find a way to update model with data so it works and triggers UI update.
         tweet = {
             "screenName": screenName,
             "tweetID": tweetID,
@@ -182,15 +167,7 @@ class AppController(BaseController):
     def _scoreTweet(self, tweetStatus: Dict[str, Any]) -> int:
         return self.sentimentAnalysis.get_tweet_sentiment(tweetStatus)
 
-    def _convertDate(self, date: str) -> str:
-        dateComponents: list[str] = date.split()
-        year: str = dateComponents[5]
-        month: str = self.MONTH_MAP[dateComponents[1]]
-        day: str = dateComponents[2]
-        time: str = dateComponents[3]
-
-        return year + '-' + month + '-' + day + ' ' + time
-
+    # TODO: Use search keywords from a database or other external source.
     def _extractTicker(self, tweetStatus) -> str:
         txt = tweetStatus
         bitcoin_finder = re.search('bitcoin|Bitcoin|BITCOIN|btc|BTC', txt)
@@ -201,50 +178,18 @@ class AppController(BaseController):
         # if bitcoin is contained in the tweet it will return out the string "BTC"
         return 'BTC'
 
-    def updateTweetHistory(self) -> None:
-        if not self._dbExists():
-            return
-
-        # get tweets from database
-        tweets = list()
-        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", '')) # initiates DAO instance
-        influencers_tweets = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
-
-        # get influencers from db
-        influencers = influencersDAO.get_influencers()
-
-        # TODO: will need check who is being followed and then do a of tweets on those individuals
-        for person in influencers:
-            if not person.following_influencer:
-                continue
-
-            # add influencer to following
-            cast(AppModel, self.model).followInfluencer(person.influencer_twitter_acc)
-
-            # For each individual the person is followed and then pulls their tweet history in the database
-            # influencersDAO.follow_influencer(person)
-            _tweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
-            influencerTweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
-
-            for influencerTweet in influencerTweets:
-                tweets.append(influencerTweet.to_dict())
-
-        # pass tweets to model
-        for tweet in tweets:
-            cast(AppModel, self.model).addTweet(tweet)
-
+    @_dbContext
     def startStream(self) -> None:
-        if not self._dbExists():
-            return
-
-        self.twitterStream.influencers = self.getInfluencerIds()
-        self.twitterStream.filter(track=self._getCryptoKeywords(), follow=self.getInfluencerIds(), is_async=True)
+        self.twitterStream.influencers = self._getInfluencerIDs()
+        self.twitterStream.filter(
+            track=self._getCryptoKeywords(), follow=self._getInfluencerIDs() or list(), is_async=True
+        )
 
     def restartStream(self) -> None:
         self.twitterStream.disconnect()
         self.startStream()
 
-    # TODO: get followers and filters
+    # TODO: pull keywords from database or other source.
     def _getCryptoKeywords(self) -> List[str]:
         keywords = ["bitcoin", "btc"]
         return keywords
@@ -253,33 +198,67 @@ class AppController(BaseController):
         dbPath: str = os.path.join(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         return os.path.isfile(dbPath)
 
-    def getInfluencerIds(self) -> List[str]:
-        if not self._dbExists():
-            return list()
-
+    @_dbContext
+    def _getInfluencerIDs(self) -> List[str]:
         influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
         influencers = influencersDAO.get_influencers()
 
         return [influencer.influencer_user_id for influencer in influencers if influencer.following_influencer]
 
-    def computeAggregateScore(self) -> None:
+    @_dbContext
+    def updateTweetHistory(self) -> None:
+        # get tweets from database
+        tweets = list()
+        influencersDAO = InfluencersDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
+        influencers_tweets = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
+
+        # get influencers from db
+        influencers = influencersDAO.get_influencers()
+
+        for person in influencers:
+            if not person.following_influencer:
+                continue
+
+            # add influencer to following
+            cast(AppModel, self.model).followInfluencer(person.influencer_twitter_acc)
+
+            # For each individual the person is followed and then pulls their tweet history in the database
+            _tweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
+            influencerTweets = influencers_tweets.get_all_influencer_tweets(person.influencer_twitter_acc)
+
+            for influencerTweet in influencerTweets:
+                tweets.append(influencerTweet.to_dict())
+
+        # pass tweets to model
+        cast(AppModel, self.model).tweetHistory = tweets
+
+    def computeAggregateScore(self, date: datetime) -> None:
         tweetDAO = InfluencersTweetDAO(self.settings.value("DB_PATH", ''), self.settings.value("DB_NAME", ''))
-        today: datetime = datetime.today()
-        formattedDate: str = f"{today.year}-{str(today.month).zfill(2)}-{str(today.day).zfill(2)} 00:00:00"
-        scores: Dict[int, int] = tweetDAO.get_daily_sentiment_score(formattedDate)
+        scores: Dict[int, int] = tweetDAO.get_daily_sentiment_score(
+            {"year": str(date.year), "month": str(date.month).zfill(2), "day": str(date.day).zfill(2)}
+        )
 
         model: AppModel = cast(AppModel, self.model)
         model.aggregateScore = scores.get(1, 0), scores.get(0, 0)
 
+    @_dbContext
+    def updatePrice(self) -> None:
+        """
+        Calls crypto coin API at regular interval and updates model
+        """
+
+        # TODO: extract these variables outside so they can be passed in via calling method / some other source.
+        name: str = "bitcoin"
+        ticker: str = "btc"
+        endDate: datetime = datetime.today()
+        startDate: datetime = endDate - timedelta(days=14)
+
+        self.thread = QThread()
+        self.worker = CoinGeckoWorker(self.model)
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(lambda: self.worker.run(name, ticker, startDate, endDate))
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
+
     def tearDown(self) -> None:
         self.twitterStream.disconnect()
-
-    def updatePrice(self) -> None:
-        '''
-        Calls crypto coin API at regular interval and updates model
-        '''
-        model: AppModel = cast(AppModel, self.model)
-        cryptocoin = CryptoCoin("bitcoin", "btc")
-        end = time.time()*1000
-        start = end - self.TWO_WEEKS
-        model.cryptoPriceHistory = cryptocoin.get_historic_pricing(start_date= start, end_date = end)

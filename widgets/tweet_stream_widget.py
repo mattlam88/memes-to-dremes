@@ -4,6 +4,16 @@ from widgets.tweet_stream_widget_ui import Ui_TweetStream
 
 
 class TweetStreamWidget(QWidget):
+    # region Properties
+
+    @property
+    def ui(self) -> Ui_TweetStream:
+        return self._ui
+
+    # endregion
+
+    # region Constructor
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -14,6 +24,4 @@ class TweetStreamWidget(QWidget):
     def _connectSignals(self) -> None:
         pass
 
-    @property
-    def ui(self) -> Ui_TweetStream:
-        return self._ui
+    # endregion
